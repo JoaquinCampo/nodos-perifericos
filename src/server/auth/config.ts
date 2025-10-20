@@ -9,7 +9,7 @@ import z from "zod";
 
 import { db } from "~/server/db";
 import {
-  findUserByCiAndClinicId,
+  findUserByEmailAndClinicId,
   findUserById,
 } from "~/server/controllers/auth";
 import { compareSync } from "bcryptjs";
@@ -61,23 +61,23 @@ export const authConfig = {
       name: "Credentials",
       credentials: {
         clinicId: { label: "Clinic ID", type: "text" },
-        ci: { label: "CI", type: "text" },
+        email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
         const { data: parsedCredentials, success } = z
           .object({
             clinicId: z.string(),
-            ci: z.string(),
+            email: z.string().email("El email no es válido"),
             password: z.string(),
           })
           .safeParse(credentials);
 
         if (!success) throw new AuthError();
 
-        const { clinicId, ci, password } = parsedCredentials;
+        const { clinicId, email, password } = parsedCredentials;
 
-        const user = await findUserByCiAndClinicId({ ci, clinicId });
+        const user = await findUserByEmailAndClinicId({ email, clinicId });
 
         if (!user?.password || !compareSync(password, user.password))
           throw new AuthError();

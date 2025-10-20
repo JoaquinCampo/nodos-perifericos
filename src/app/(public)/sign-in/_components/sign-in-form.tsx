@@ -7,6 +7,7 @@ import { Building2, KeyRound, User, Loader2 } from "lucide-react";
 import { z } from "zod";
 import { useAction } from "next-safe-action/hooks";
 import { toast } from "sonner";
+import Link from "next/link";
 
 import { Button } from "~/components/ui/button";
 import {
@@ -173,15 +174,26 @@ export function SignInForm({ clinics }: SignInFormProps) {
                 "Iniciar Sesión"
               )}
             </Button>
-            <p className="text-center text-xs text-slate-500 dark:text-slate-400">
-              ¿Olvidaste tu contraseña?{" "}
-              <a
-                href="#"
-                className="font-medium text-slate-900 hover:underline dark:text-slate-50"
-              >
-                Contacta al administrador
-              </a>
-            </p>
+            <div className="flex flex-col gap-2 text-center text-xs text-slate-500 dark:text-slate-400">
+              <p>
+                ¿No tienes una cuenta?{" "}
+                <Link
+                  href="/sign-up"
+                  className="font-medium text-slate-900 hover:underline dark:text-slate-50"
+                >
+                  Regístrate
+                </Link>
+              </p>
+              <p>
+                ¿Olvidaste tu contraseña?{" "}
+                <a
+                  href="#"
+                  className="font-medium text-slate-900 hover:underline dark:text-slate-50"
+                >
+                  Contacta al administrador
+                </a>
+              </p>
+            </div>
           </CardFooter>
         </form>
       </Form>
