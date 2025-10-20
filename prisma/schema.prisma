@@ -14,16 +14,9 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    createdBy   User   @relation(fields: [createdById], references: [id])
-    createdById String
-
-    @@index([name])
+enum Role {
+    USER
+    ADMIN
 }
 
 // Necessary for Next auth
@@ -54,15 +47,132 @@ model Session {
     user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+model Clinic {
+    id            String    @id @default(cuid())
+    name          String
+    address       String? 
+    phone         String?
+    email         String?
+    image         String?
+
+    users         User[]
+    configuration Configuration?
+
+    createdAt     DateTime  @default(now())
+    updatedAt     DateTime  @updatedAt @default(now())
+
+    clinicalDocuments ClinicalDocument[]
+}
+
 model User {
     id            String    @id @default(cuid())
-    name          String?
-    email         String?   @unique
+    ci            String 
+    name          String
+    email         String    
+    phone         String?
     emailVerified DateTime?
-    image         String?
+    password      String?   
+    image         String?   
     accounts      Account[]
     sessions      Session[]
-    posts         Post[]
+
+    clinicId      String?
+    clinic        Clinic?   @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+    healthWorker HealthWorker?
+    clinicAdmin ClinicAdmin?
+
+    createdAt     DateTime  @default(now())
+    updatedAt     DateTime  @updatedAt @default(now())
+
+    @@unique([email, clinicId], name: "unique_email_per_clinic")
+    @@unique([ci, clinicId], name: "unique_ci_per_clinic")
+    @@unique([phone, clinicId], name: "unique_phone_per_clinic")
+    @@index([clinicId])
+}
+
+model HealthWorker {
+    id            String    @id @default(cuid())
+    userId        String    @unique
+    user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    createdAt     DateTime  @default(now())
+    updatedAt     DateTime  @updatedAt @default(now())
+
+    healthWorkerClinicalDocuments HealthWorkerClinicalDocument[]
+}
+
+model ClinicAdmin {
+    id            String    @id @default(cuid())
+    userId        String    @unique
+    user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    createdAt     DateTime  @default(now())
+    updatedAt     DateTime  @updatedAt @default(now())
+}
+
+model ClinicalDocument {
+    id            String    @id @default(cuid())
+    clinicId      String
+    clinic        Clinic    @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+
+    healthUserId String
+
+    title         String
+    description   String?
+    content       String?   @db.Text
+    contentUrl    String?
+    contentType   String?
+
+    createdAt     DateTime  @default(now())
+    updatedAt     DateTime  @updatedAt @default(now())
+
+    healthWorkerClinicalDocuments HealthWorkerClinicalDocument[]
+}
+
+model HealthWorkerClinicalDocument {
+    id            String    @id @default(cuid())
+
+    clinicalDocumentId String
+    clinicalDocument ClinicalDocument @relation(fields: [clinicalDocumentId], references: [id], onDelete: Cascade)
+
+    healthWorkerId String
+    healthWorker HealthWorker @relation(fields: [healthWorkerId], references: [id], onDelete: Cascade)
+}
+
+
+
+model Configuration {
+    id                String    @id @default(cuid())
+    clinicId          String    @unique
+    clinic            Clinic    @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+    
+    // Branding
+    logo              String?   // URL or path to logo image
+    title             String?   // Custom title for the clinic portal
+    favicon           String?   // URL or path to favicon
+    
+    // Colors (stored as hex values, e.g., #FF5733)
+    primaryColor      String?   @default("#3B82F6")      // Main brand color
+    secondaryColor    String?   @default("#10B981")      // Secondary accent color
+    headerColor       String?   @default("#1F2937")      // Header background color
+    backgroundColor   String?   @default("#F9FAFB")      // Page background color
+    sidebarColor      String?   @default("#FFFFFF")      // Sidebar background color
+    textColor         String?   @default("#111827")      // Primary text color
+    linkColor         String?   @default("#3B82F6")      // Link color
+    buttonColor       String?   @default("#3B82F6")      // Primary button color
+    buttonTextColor   String?   @default("#FFFFFF")      // Button text color
+    
+    // Typography
+    fontFamily        String?   @default("Inter")        // Font family name
+    fontSize          String?   @default("16px")         // Base font size
+    
+    // Layout
+    headerHeight      String?   @default("64px")         // Header height
+    sidebarWidth      String?   @default("256px")        // Sidebar width
+    borderRadius      String?   @default("8px")          // Border radius for elements
+    
+    createdAt         DateTime  @default(now())
+    updatedAt         DateTime  @updatedAt @default(now())
 }
 
 model VerificationToken {

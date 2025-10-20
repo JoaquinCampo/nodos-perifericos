@@ -1,0 +1,9 @@
+services:
+  dev-db:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: nodos-perifericos
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - 5432:5432

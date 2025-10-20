@@ -1,8 +1,26 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { type DefaultSession, type NextAuthConfig } from "next-auth";
-import DiscordProvider from "next-auth/providers/discord";
+import {
+  CredentialsSignin,
+  type DefaultSession,
+  type NextAuthConfig,
+} from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import z from "zod";
 
 import { db } from "~/server/db";
+import {
+  findUserByCiAndClinicId,
+  findUserById,
+} from "~/server/controllers/auth";
+import { compareSync } from "bcryptjs";
+import {
+  type Clinic,
+  type ClinicAdmin,
+  type HealthWorker,
+} from "@prisma/client";
+import { type Configuration } from "@prisma/client";
+import { v4 as uuidv4 } from "uuid";
+import { encode } from "next-auth/jwt";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -14,16 +32,23 @@ declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
       id: string;
-      // ...other properties
-      // role: UserRole;
+      ci: string;
+      name: string;
+      email: string;
+      phone: string | null;
+      image: string | null;
+      clinic: (Clinic & { configuration: Configuration }) | null;
+      healthWorker: HealthWorker | null;
+      clinicAdmin: ClinicAdmin | null;
     } & DefaultSession["user"];
   }
-
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
 }
+
+class AuthError extends CredentialsSignin {
+  code = "Invalid Clinic, CI or Password";
+}
+
+const adapter = PrismaAdapter(db);
 
 /**
  * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
@@ -32,25 +57,91 @@ declare module "next-auth" {
  */
 export const authConfig = {
   providers: [
-    DiscordProvider,
-    /**
-     * ...add more providers here.
-     *
-     * Most other providers require a bit more work than the Discord provider. For example, the
-     * GitHub provider requires you to add the `refresh_token_expires_in` field to the Account
-     * model. Refer to the NextAuth.js docs for the provider you want to use. Example:
-     *
-     * @see https://next-auth.js.org/providers/github
-     */
-  ],
-  adapter: PrismaAdapter(db),
-  callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        clinicId: { label: "Clinic ID", type: "text" },
+        ci: { label: "CI", type: "text" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        const { data: parsedCredentials, success } = z
+          .object({
+            clinicId: z.string(),
+            ci: z.string(),
+            password: z.string(),
+          })
+          .safeParse(credentials);
+
+        if (!success) throw new AuthError();
+
+        const { clinicId, ci, password } = parsedCredentials;
+
+        const user = await findUserByCiAndClinicId({ ci, clinicId });
+
+        if (!user?.password || !compareSync(password, user.password))
+          throw new AuthError();
+
+        const { password: _password, ...userWithoutPassword } = user;
+
+        return userWithoutPassword;
       },
     }),
+  ],
+  adapter,
+  callbacks: {
+    session: async ({ session }) => {
+      const sessionUser = await findUserById({ id: session.user.id });
+
+      return {
+        ...session,
+        user: sessionUser,
+      };
+    },
+    jwt: async ({ token, account }) => {
+      if (
+        account &&
+        (account.provider === "credentials" || account.provider === "phone")
+      ) {
+        token.credentials = true;
+      }
+
+      return token;
+    },
+  },
+  jwt: {
+    encode: async (params) => {
+      if (params.token?.credentials) {
+        const sessionToken = uuidv4();
+
+        if (!params.token.sub) {
+          throw new Error("User id not found in token");
+        }
+
+        const createdSession = await adapter?.createSession?.({
+          sessionToken,
+          userId: params.token.sub,
+          expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
+        });
+
+        if (!createdSession) {
+          throw new Error("Failed to create session");
+        }
+
+        return sessionToken;
+      }
+
+      return encode(params);
+    },
+  },
+  pages: {
+    signIn: "/sign-in",
+  },
+  events: {
+    async signOut(message) {
+      if ("session" in message && message.session) {
+        await adapter?.deleteSession?.(message.session.sessionToken);
+      }
+    },
   },
 } satisfies NextAuthConfig;
