@@ -62,7 +62,6 @@ model User {
     ci            String?
     firstName     String?
     lastName      String?
-    name          String
     email         String
     phone         String?
     address       String?
@@ -115,7 +114,7 @@ model ClinicalDocument {
     content     String? @db.Text
     contentUrl  String?
 
-    healthUserId String // id of the health user in HCEN
+    healthUserId String 
 
     clinicId                      String
     clinic                        Clinic                         @relation(fields: [clinicId], references: [id], onDelete: Cascade)

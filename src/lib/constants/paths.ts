@@ -7,6 +7,10 @@ export type PublicPath = keyof typeof PublicPaths;
 
 export const AdminPaths = {
   Dashboard: "/admin",
+  HealthUsers: "/admin/usuarios-de-salud",
+  HealthProfessionals: "/admin/profesionales-de-salud",
+  Administrators: "/admin/administradores",
+  Configuration: "/admin/configuracion",
 } as const;
 
 export type AdminPath = keyof typeof AdminPaths;
