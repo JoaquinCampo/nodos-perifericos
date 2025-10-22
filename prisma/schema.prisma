@@ -43,39 +43,43 @@ model Session {
 }
 
 model Clinic {
-    id            String    @id @default(cuid())
-    name          String
-    address       String 
-    phone         String
-    email         String
+    id      String @id @default(cuid())
+    name    String
+    address String
+    phone   String
+    email   String
 
-    users         User[]
-    configuration Configuration?
+    users             User[]
+    configuration     Configuration?
     clinicalDocuments ClinicalDocument[]
 
-    createdAt     DateTime  @default(now())
-    updatedAt     DateTime  @updatedAt @default(now())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
 }
 
 model User {
     id            String    @id @default(cuid())
     ci            String?
+    firstName     String?
+    lastName      String?
     name          String
-    email         String    
+    email         String
     phone         String?
+    address       String?
+    dateOfBirth   DateTime?
     emailVerified DateTime?
-    password      String?   
-    image         String?   
+    password      String?
+    image         String?
     accounts      Account[]
     sessions      Session[]
 
-    clinicId      String?
-    clinic        Clinic?   @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+    clinicId     String?
+    clinic       Clinic?       @relation(fields: [clinicId], references: [id], onDelete: Cascade)
     healthWorker HealthWorker?
-    clinicAdmin ClinicAdmin?
+    clinicAdmin  ClinicAdmin?
 
-    createdAt     DateTime  @default(now())
-    updatedAt     DateTime  @updatedAt @default(now())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
 
     @@unique([email, clinicId], name: "unique_email_per_clinic")
     @@unique([ci, clinicId], name: "unique_ci_per_clinic")
@@ -84,86 +88,83 @@ model User {
 }
 
 model HealthWorker {
-    id            String    @id @default(cuid())
-    userId        String    @unique
-    user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+    id     String @id @default(cuid())
+    userId String @unique
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    createdAt     DateTime  @default(now())
-    updatedAt     DateTime  @updatedAt @default(now())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
 
     healthWorkerClinicalDocuments HealthWorkerClinicalDocument[]
 }
 
 model ClinicAdmin {
-    id            String    @id @default(cuid())
-    userId        String    @unique
-    user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+    id     String @id @default(cuid())
+    userId String @unique
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    createdAt     DateTime  @default(now())
-    updatedAt     DateTime  @updatedAt @default(now())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
 }
 
 model ClinicalDocument {
-    id            String    @id @default(cuid())
+    id String @id @default(cuid())
 
-    title         String
-    description   String?
-    content       String?   @db.Text
-    contentUrl    String?
+    title       String
+    description String?
+    content     String? @db.Text
+    contentUrl  String?
 
-    healthUserId  String
-    
+    healthUserId String // id of the health user in HCEN
 
-    clinicId      String
-    clinic        Clinic    @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+    clinicId                      String
+    clinic                        Clinic                         @relation(fields: [clinicId], references: [id], onDelete: Cascade)
     healthWorkerClinicalDocuments HealthWorkerClinicalDocument[]
 
-    createdAt     DateTime  @default(now())
-    updatedAt     DateTime  @updatedAt @default(now())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
 }
 
 model HealthWorkerClinicalDocument {
-    id            String    @id @default(cuid())
+    id                 String           @id @default(cuid())
     clinicalDocumentId String
-    clinicalDocument ClinicalDocument @relation(fields: [clinicalDocumentId], references: [id], onDelete: Cascade)
-    healthWorkerId String
-    healthWorker HealthWorker @relation(fields: [healthWorkerId], references: [id], onDelete: Cascade)
+    clinicalDocument   ClinicalDocument @relation(fields: [clinicalDocumentId], references: [id], onDelete: Cascade)
+    healthWorkerId     String
+    healthWorker       HealthWorker     @relation(fields: [healthWorkerId], references: [id], onDelete: Cascade)
 }
 
-
-
 model Configuration {
-    id                String    @id @default(cuid())
-    clinicId          String    @unique
-    clinic            Clinic    @relation(fields: [clinicId], references: [id], onDelete: Cascade)
-    
+    id       String @id @default(cuid())
+    clinicId String @unique
+    clinic   Clinic @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+
     // Branding
-    logo              String?   // URL or path to logo image
-    title             String?   // Custom title for the clinic portal
-    favicon           String?   // URL or path to favicon
-    
+    logo    String? // URL or path to logo image
+    title   String? // Custom title for the clinic portal
+    favicon String? // URL or path to favicon
+
     // Colors (stored as hex values, e.g., #FF5733)
-    primaryColor      String?   @default("#3B82F6")      // Main brand color
-    secondaryColor    String?   @default("#10B981")      // Secondary accent color
-    headerColor       String?   @default("#1F2937")      // Header background color
-    backgroundColor   String?   @default("#F9FAFB")      // Page background color
-    sidebarColor      String?   @default("#FFFFFF")      // Sidebar background color
-    textColor         String?   @default("#111827")      // Primary text color
-    linkColor         String?   @default("#3B82F6")      // Link color
-    buttonColor       String?   @default("#3B82F6")      // Primary button color
-    buttonTextColor   String?   @default("#FFFFFF")      // Button text color
-    
+    primaryColor    String? @default("#3B82F6") // Main brand color
+    secondaryColor  String? @default("#10B981") // Secondary accent color
+    headerColor     String? @default("#1F2937") // Header background color
+    backgroundColor String? @default("#F9FAFB") // Page background color
+    sidebarColor    String? @default("#FFFFFF") // Sidebar background color
+    textColor       String? @default("#111827") // Primary text color
+    linkColor       String? @default("#3B82F6") // Link color
+    buttonColor     String? @default("#3B82F6") // Primary button color
+    buttonTextColor String? @default("#FFFFFF") // Button text color
+
     // Typography
-    fontFamily        String?   @default("Inter")        // Font family name
-    fontSize          String?   @default("16px")         // Base font size
-    
+    fontFamily String? @default("Inter") // Font family name
+    fontSize   String? @default("16px") // Base font size
+
     // Layout
-    headerHeight      String?   @default("64px")         // Header height
-    sidebarWidth      String?   @default("256px")        // Sidebar width
-    borderRadius      String?   @default("8px")          // Border radius for elements
-    
-    createdAt         DateTime  @default(now())
-    updatedAt         DateTime  @updatedAt @default(now())
+    headerHeight String? @default("64px") // Header height
+    sidebarWidth String? @default("256px") // Sidebar width
+    borderRadius String? @default("8px") // Border radius for elements
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
 }
 
 model VerificationToken {
