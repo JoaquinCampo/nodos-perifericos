@@ -51,3 +51,11 @@ export const updateHealthWorkerSchema = baseClinicScopedSchema.extend({
 });
 
 export type UpdateHealthWorkerSchema = z.infer<typeof updateHealthWorkerSchema>;
+
+export const fetchHealthWorkerFromHcenSchema = z.object({
+  ci: ciField,
+});
+
+export type FetchHealthWorkerFromHcenSchema = z.infer<
+  typeof fetchHealthWorkerFromHcenSchema
+>;

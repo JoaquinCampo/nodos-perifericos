@@ -4,10 +4,15 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { db } from "~/server/db";
 import type {
   CreateHealthWorkerSchema,
+  FetchHealthWorkerFromHcenSchema,
   HealthWorkerIdSchema,
   ListHealthWorkersSchema,
   UpdateHealthWorkerSchema,
 } from "~/server/schemas/health-worker";
+import {
+  fetchHealthWorkerByCi,
+  HcenClientError,
+} from "~/server/clients/hcen";
 
 const healthWorkerInclude = {
   user: {
@@ -250,4 +255,32 @@ export const deleteHealthWorker = async (input: HealthWorkerIdSchema) => {
   });
 
   return { success: true as const };
+};
+
+export const fetchHealthWorkerFromHcen = async (
+  input: FetchHealthWorkerFromHcenSchema,
+) => {
+  try {
+    const result = await fetchHealthWorkerByCi(input.ci);
+
+    return {
+      ci: result.ci,
+      firstName: result.firstName,
+      lastName: result.lastName,
+      email: result.email,
+      phone: result.phone,
+      address: result.address,
+      dateOfBirth: result.dateOfBirth,
+    };
+  } catch (error) {
+    if (error instanceof HcenClientError) {
+      if (error.status === 404) {
+        throw new Error("No se encontró un profesional con esa cédula en HCEN");
+      }
+
+      throw new Error(error.message);
+    }
+
+    throw error;
+  }
 };

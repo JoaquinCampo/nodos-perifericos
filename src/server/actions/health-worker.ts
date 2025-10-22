@@ -6,6 +6,7 @@ import { requireClinicAdminContext } from "~/server/auth/utils";
 import * as healthWorkerController from "~/server/controllers/health-worker";
 import {
   createHealthWorkerSchema,
+  fetchHealthWorkerFromHcenSchema,
   healthWorkerIdSchema,
   listHealthWorkersSchema,
   updateHealthWorkerSchema,
@@ -66,4 +67,11 @@ export const deleteHealthWorkerAction = actionClient
       ...parsedInput,
       clinicId,
     });
+  });
+
+export const fetchHealthWorkerFromHcenAction = actionClient
+  .inputSchema(fetchHealthWorkerFromHcenSchema)
+  .action(async ({ parsedInput }) => {
+    await requireClinicAdminContext();
+    return await healthWorkerController.fetchHealthWorkerFromHcen(parsedInput);
   });

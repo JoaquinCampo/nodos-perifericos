@@ -1,6 +1,7 @@
 import * as healthWorkerService from "~/server/services/health-worker";
 import type {
   CreateHealthWorkerSchema,
+  FetchHealthWorkerFromHcenSchema,
   HealthWorkerIdSchema,
   ListHealthWorkersSchema,
   UpdateHealthWorkerSchema,
@@ -24,4 +25,10 @@ export const updateHealthWorker = async (input: UpdateHealthWorkerSchema) => {
 
 export const deleteHealthWorker = async (input: HealthWorkerIdSchema) => {
   return await healthWorkerService.deleteHealthWorker(input);
+};
+
+export const fetchHealthWorkerFromHcen = async (
+  input: FetchHealthWorkerFromHcenSchema,
+) => {
+  return await healthWorkerService.fetchHealthWorkerFromHcen(input);
 };
