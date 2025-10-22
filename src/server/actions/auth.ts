@@ -15,17 +15,20 @@ const actionClient = createSafeActionClient();
 
 const signInSchema = z.object({
   clinicId: z.string().min(1, "Debes seleccionar una clínica"),
-  ci: z.string().min(1, "La cédula es requerida"),
+  email: z
+    .string()
+    .email("El email no es válido")
+    .min(1, "El email es requerido"),
   password: z.string().min(1, "La contraseña es requerida"),
 });
 
 export const signInAction = actionClient
   .inputSchema(signInSchema)
-  .action(async ({ parsedInput: { clinicId, ci, password } }) => {
+  .action(async ({ parsedInput: { clinicId, email, password } }) => {
     try {
       await signIn("credentials", {
         clinicId,
-        ci,
+        email,
         password,
         redirect: false,
       });
@@ -34,7 +37,7 @@ export const signInAction = actionClient
         throw error;
       }
 
-      throw new Error("Clínica, CI o contraseña incorrectos");
+      throw new Error("Clínica, email o contraseña incorrectos");
     }
 
     redirect("/");
@@ -58,9 +61,21 @@ export const signUpAction = actionClient
   .inputSchema(signUpSchema)
   .action(async ({ parsedInput }) => {
     try {
-      await authController.signUp(parsedInput);
-      return { success: true };
+      const user = await authController.signUp(parsedInput);
+
+      await signIn("credentials", {
+        clinicId: user.clinicId,
+        email: user.email,
+        password: parsedInput.password,
+        redirect: false,
+      });
+
+      redirect("/");
     } catch (error) {
+      if (isRedirectError(error)) {
+        throw error;
+      }
+
       if (error instanceof Error) {
         throw new Error(error.message);
       }

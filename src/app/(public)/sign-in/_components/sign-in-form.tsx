@@ -3,7 +3,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { type Clinic } from "@prisma/client";
-import { Building2, KeyRound, User, Loader2 } from "lucide-react";
+import { Building2, KeyRound, Mail, Loader2 } from "lucide-react";
 import { z } from "zod";
 import { useAction } from "next-safe-action/hooks";
 import { toast } from "sonner";
@@ -38,7 +38,10 @@ import { signInAction } from "~/server/actions/auth";
 
 const signInSchema = z.object({
   clinicId: z.string().min(1, "Debes seleccionar una clínica"),
-  ci: z.string().min(1, "La cédula es requerida"),
+  email: z
+    .string()
+    .email("El email no es válido")
+    .min(1, "El email es requerido"),
   password: z.string().min(1, "La contraseña es requerida"),
 });
 
@@ -53,7 +56,7 @@ export function SignInForm({ clinics }: SignInFormProps) {
     resolver: zodResolver(signInSchema),
     defaultValues: {
       clinicId: "",
-      ci: "",
+      email: "",
       password: "",
     },
   });
@@ -119,17 +122,17 @@ export function SignInForm({ clinics }: SignInFormProps) {
 
             <FormField
               control={form.control}
-              name="ci"
+              name="email"
               render={({ field }) => (
                 <FormItem className="space-y-2">
                   <FormLabel className="flex items-center gap-2">
-                    <User className="size-4" />
-                    Cédula de Identidad
+                    <Mail className="size-4" />
+                    Email
                   </FormLabel>
                   <FormControl>
                     <Input
-                      type="text"
-                      placeholder="12345678"
+                      type="email"
+                      placeholder="ejemplo@correo.com"
                       autoComplete="username"
                       disabled={isExecuting}
                       {...field}
@@ -183,15 +186,6 @@ export function SignInForm({ clinics }: SignInFormProps) {
                 >
                   Regístrate
                 </Link>
-              </p>
-              <p>
-                ¿Olvidaste tu contraseña?{" "}
-                <a
-                  href="#"
-                  className="font-medium text-slate-900 hover:underline dark:text-slate-50"
-                >
-                  Contacta al administrador
-                </a>
               </p>
             </div>
           </CardFooter>
