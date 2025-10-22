@@ -32,3 +32,11 @@ export const signUpSchema = z.object({
 });
 
 export type SignUpSchema = z.infer<typeof signUpSchema>;
+
+export const signInSchema = z.object({
+  clinicId: z.string().min(1, "Debes seleccionar una clínica"),
+  email: z.string().email("El email no es válido"),
+  password: z.string().min(1, "La contraseña es requerida"),
+});
+
+export type SignInSchema = z.infer<typeof signInSchema>;

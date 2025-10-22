@@ -1,14 +1,21 @@
 export const PublicPaths = {
   SignIn: "/sign-in",
+  SignUp: "/sign-up",
 } as const;
+
+export type PublicPath = keyof typeof PublicPaths;
 
 export const AdminPaths = {
   Dashboard: "/admin",
 } as const;
 
+export type AdminPath = keyof typeof AdminPaths;
+
 export const UserPaths = {
-  Dashboard: "/professional",
+  Dashboard: "/",
 } as const;
+
+export type UserPath = keyof typeof UserPaths;
 
 export const Paths = {
   ...PublicPaths,
@@ -16,6 +23,4 @@ export const Paths = {
   ...UserPaths,
 } as const;
 
-export type PublicPath = (typeof PublicPaths)[keyof typeof PublicPaths];
-export type AdminPath = (typeof AdminPaths)[keyof typeof AdminPaths];
-export type UserPath = (typeof UserPaths)[keyof typeof UserPaths];
+export type Path = keyof typeof Paths;

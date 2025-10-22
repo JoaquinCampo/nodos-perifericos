@@ -4,7 +4,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { type Clinic } from "@prisma/client";
 import { Building2, KeyRound, Mail, Loader2 } from "lucide-react";
-import { z } from "zod";
 import { useAction } from "next-safe-action/hooks";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -35,24 +34,14 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 import { signInAction } from "~/server/actions/auth";
-
-const signInSchema = z.object({
-  clinicId: z.string().min(1, "Debes seleccionar una clínica"),
-  email: z
-    .string()
-    .email("El email no es válido")
-    .min(1, "El email es requerido"),
-  password: z.string().min(1, "La contraseña es requerida"),
-});
-
-type SignInFormValues = z.infer<typeof signInSchema>;
+import { signInSchema, type SignInSchema } from "~/server/schemas/auth";
 
 interface SignInFormProps {
   clinics: Clinic[];
 }
 
 export function SignInForm({ clinics }: SignInFormProps) {
-  const form = useForm<SignInFormValues>({
+  const form = useForm<SignInSchema>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
       clinicId: "",
@@ -67,7 +56,7 @@ export function SignInForm({ clinics }: SignInFormProps) {
     },
   });
 
-  const onSubmit = (data: SignInFormValues) => {
+  const onSubmit = (data: SignInSchema) => {
     execute(data);
   };
 

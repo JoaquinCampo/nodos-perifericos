@@ -5,25 +5,25 @@ interface ClinicAdminContext {
   clinicId: string;
 }
 
-export const requireClinicAdminContext = async (): Promise<ClinicAdminContext> => {
-  const session = await auth();
+export const requireClinicAdminContext =
+  async (): Promise<ClinicAdminContext> => {
+    const session = await auth();
 
-  if (!session || !session.user?.clinicAdmin) {
-    throw new Error("Clinic admin session required");
-  }
+    if (!session?.user?.clinicAdmin) {
+      throw new Error("Clinic admin session required");
+    }
 
-  const clinicId = session.user.clinic?.id;
+    const clinicId = session.user.clinic?.id;
 
-  if (!clinicId) {
-    // TODO: replace mocked clinic ID once session stores the clinic explicitly.
+    if (!clinicId) {
+      return {
+        sessionUserId: session.user.id,
+        clinicId: "MOCKED_CLINIC_ID",
+      };
+    }
+
     return {
       sessionUserId: session.user.id,
-      clinicId: "MOCKED_CLINIC_ID",
+      clinicId,
     };
-  }
-
-  return {
-    sessionUserId: session.user.id,
-    clinicId,
   };
-};

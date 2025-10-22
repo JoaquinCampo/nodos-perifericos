@@ -1,7 +1,10 @@
 import { findAllClinics } from "~/server/controllers/clinic";
 import { SignUpForm } from "./_components/sign-up-form";
+import { authGuard } from "~/server/auth/auth-guard";
 
 export default async function SignUpPage() {
+  await authGuard("SignUp");
+
   const clinics = await findAllClinics();
 
   return (
