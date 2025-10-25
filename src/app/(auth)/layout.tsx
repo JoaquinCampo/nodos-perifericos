@@ -1,8 +1,8 @@
 import { type Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Sign In - Clinic Portal",
-  description: "Sign in to your account to continue",
+  title: "Iniciar sesión - Portal de clínica",
+  description: "Inicia sesión para acceder a tu cuenta",
 };
 
 export default function PublicLayout({
