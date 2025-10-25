@@ -16,12 +16,12 @@ const menuItems = [
   },
   {
     label: "Profesionales de Salud",
-    path: AdminPaths.HealthProfessionals,
+    path: AdminPaths.HealthWorkers,
     icon: Stethoscope,
   },
   {
     label: "Administradores",
-    path: AdminPaths.Administrators,
+    path: AdminPaths.ClinicAdmins,
     icon: Shield,
   },
 ];
@@ -125,7 +125,7 @@ export function AdminSidebar() {
       <div className="border-t bg-white/50 p-4 backdrop-blur-sm dark:bg-slate-950/50">
         <Button
           variant="ghost"
-          className="w-full justify-start gap-3 rounded-xl px-4 py-3 text-slate-700 transition-all duration-200 hover:bg-red-50 hover:text-red-600 hover:shadow-md dark:text-slate-300 dark:hover:bg-red-950/30 dark:hover:text-red-400"
+          className="w-full justify-center gap-3"
           onClick={handleSignOut}
         >
           <LogOut className="size-5" />

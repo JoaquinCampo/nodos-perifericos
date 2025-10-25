@@ -8,7 +8,7 @@ export const findAllClinics = async () => {
 export const createClinic = async (input: CreateClinicSchema) => {
   const { name, email, phone, address, clinicAdmin } = input;
 
-  const clinic = await db.clinic.create({
+  return await db.clinic.create({
     data: {
       name,
       email,
@@ -16,9 +16,7 @@ export const createClinic = async (input: CreateClinicSchema) => {
       address,
       users: {
         create: {
-          name: clinicAdmin.name,
-          email: clinicAdmin.email,
-          phone: clinicAdmin.phone,
+          ...clinicAdmin,
           clinicAdmin: {
             create: {},
           },
@@ -26,6 +24,4 @@ export const createClinic = async (input: CreateClinicSchema) => {
       },
     },
   });
-
-  return clinic;
 };

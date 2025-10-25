@@ -13,7 +13,7 @@ export const requireClinicAdminContext =
       throw new Error("Clinic admin session required");
     }
 
-    const clinicId = session.user.clinic?.id;
+    const clinicId = session.user.clinic.id;
 
     if (!clinicId) {
       return {

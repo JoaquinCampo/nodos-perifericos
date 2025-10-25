@@ -1,4 +1,10 @@
+import type { Metadata } from "next";
 import { AdminSidebar } from "~/components/admin-sidebar";
+
+export const metadata: Metadata = {
+  title: "Administradores - Portal de clínica",
+  icons: [{ rel: "icon", url: "/favicon.ico" }],
+};
 
 export default function AdminLayout({
   children,

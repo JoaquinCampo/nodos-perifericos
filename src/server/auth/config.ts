@@ -37,7 +37,7 @@ declare module "next-auth" {
       email: string;
       phone: string | null;
       image: string | null;
-      clinic: (Clinic & { configuration: Configuration }) | null;
+      clinic: Clinic & { configuration: Configuration };
       healthWorker: HealthWorker | null;
       clinicAdmin: ClinicAdmin | null;
     } & DefaultSession["user"];

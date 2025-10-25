@@ -12,8 +12,6 @@ export const transporter = nodemailer.createTransport({
   },
 });
 
-export const EMAIL_FROM = env.EMAIL_FROM;
-
 export const sendEmail = async (
   options: SendMailOptions,
   template: ReactElement,
@@ -21,7 +19,7 @@ export const sendEmail = async (
   const emailHtml = await render(template);
 
   await transporter.sendMail({
-    from: EMAIL_FROM,
+    from: env.EMAIL_FROM,
     to: options.to,
     subject: options.subject,
     html: emailHtml,

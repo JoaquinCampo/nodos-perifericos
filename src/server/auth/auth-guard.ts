@@ -45,7 +45,7 @@ export async function authGuard<T extends Path>(
       return session as AuthGuardResult<T>;
     }
 
-    redirect(AdminPaths.Dashboard);
+    redirect(AdminPaths.AdminDashboard);
   }
 
   if (isUser) {

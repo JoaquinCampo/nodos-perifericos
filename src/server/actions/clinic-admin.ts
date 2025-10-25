@@ -1,68 +1,58 @@
 "use server";
 
-import { createSafeActionClient } from "next-safe-action";
 import { revalidatePath } from "next/cache";
-
-import { requireClinicAdminContext } from "~/server/auth/utils";
+import { actionClient } from "~/lib/safe-action";
 import * as clinicAdminController from "~/server/controllers/clinic-admin";
 import {
-  clinicAdminIdSchema,
   createClinicAdminSchema,
+  deleteClinicAdminSchema,
   updateClinicAdminSchema,
 } from "~/server/schemas/clinic-admin";
 
-const actionClient = createSafeActionClient();
-
 export const createClinicAdminAction = actionClient
-  .inputSchema(createClinicAdminSchema.omit({ clinicId: true }))
+  .inputSchema(createClinicAdminSchema)
   .action(async ({ parsedInput }) => {
-    const { clinicId } = await requireClinicAdminContext();
-
-    const result = await clinicAdminController.createClinicAdmin({
-      ...parsedInput,
-      clinicId,
-    });
-
-    revalidatePath("/admin/administradores");
-
-    return result;
+    try {
+      const createdClinicAdmin =
+        await clinicAdminController.createClinicAdmin(parsedInput);
+      revalidatePath("/admin/administradores");
+      return createdClinicAdmin;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      }
+      throw new Error("Error al crear el administrador");
+    }
   });
 
 export const updateClinicAdminAction = actionClient
-  .inputSchema(updateClinicAdminSchema.omit({ clinicId: true }))
+  .inputSchema(updateClinicAdminSchema)
   .action(async ({ parsedInput }) => {
-    const { clinicId } = await requireClinicAdminContext();
-
-    const result = await clinicAdminController.updateClinicAdmin({
-      ...parsedInput,
-      clinicId,
-    });
-
-    revalidatePath("/admin/administradores");
-
-    return result;
+    try {
+      const updatedClinicAdmin =
+        await clinicAdminController.updateClinicAdmin(parsedInput);
+      revalidatePath("/admin/administradores");
+      return updatedClinicAdmin;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      }
+      throw new Error("Error al actualizar el administrador");
+    }
   });
 
 export const deleteClinicAdminAction = actionClient
-  .inputSchema(clinicAdminIdSchema.omit({ clinicId: true }))
+  .inputSchema(deleteClinicAdminSchema)
   .action(async ({ parsedInput }) => {
-    const { clinicId, sessionUserId } = await requireClinicAdminContext();
-
-    const clinicAdmin = await clinicAdminController.findClinicAdminById({
-      ...parsedInput,
-      clinicId,
-    });
-
-    if (clinicAdmin.user.id === sessionUserId) {
-      throw new Error("No puedes eliminar tu propia cuenta de administrador");
+    try {
+      const deletedClinicAdmin =
+        await clinicAdminController.deleteClinicAdmin(parsedInput);
+      revalidatePath("/admin/administradores");
+      return deletedClinicAdmin;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      }
+      throw new Error("Error al eliminar el administrador");
     }
-
-    const result = await clinicAdminController.deleteClinicAdmin({
-      ...parsedInput,
-      clinicId,
-    });
-
-    revalidatePath("/admin/administradores");
-
-    return result;
   });

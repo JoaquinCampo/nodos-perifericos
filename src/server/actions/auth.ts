@@ -1,17 +1,15 @@
 "use server";
 
 import { signIn } from "~/server/auth";
-import { createSafeActionClient } from "next-safe-action";
 import { redirect } from "next/navigation";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
+import { actionClient } from "~/lib/safe-action";
 import * as authController from "~/server/controllers/auth";
 import {
   sendVerificationEmailSchema,
   signUpSchema,
   signInSchema,
 } from "~/server/schemas/auth";
-
-const actionClient = createSafeActionClient();
 
 export const signInAction = actionClient
   .inputSchema(signInSchema)
