@@ -13,7 +13,6 @@ function calculateCheckDigit(ci: string): number {
 }
 
 function isValidCheckDigit(ci: string): boolean {
-  // Remove hyphen if present
   const cleanCi = ci.replace("-", "");
 
   if (cleanCi.length !== 8) {
@@ -39,8 +38,11 @@ export function cleanCi(ci: string): string {
 export const ciSchema = z
   .string()
   .min(1, "CI is required")
-  .regex(/^\d{7}-?\d$/, "CI must be in the format 1234567-8 or 12345678")
-  .refine(isValidCheckDigit, "Invalid CI: check digit does not match");
+  .regex(/^\d{7}-?\d$/, "CI debe estar en el formato 1234567-8 o 12345678")
+  .refine(
+    isValidCheckDigit,
+    "CI inválido: el dígito de verificación no coincide",
+  );
 
 export const ciOrUndefinedSchema = z
   .string()

@@ -70,6 +70,33 @@ export const updateClinicAdmin = async (input: UpdateClinicAdminSchema) => {
 
   await checkCanUpdateClinicAdmin(clinicAdminId);
 
+  const currentClinicAdmin = await db.clinicAdmin.findUnique({
+    where: { id: clinicAdminId },
+    include: { user: true },
+  });
+
+  if (!currentClinicAdmin) {
+    throw new Error("Administrador no encontrado");
+  }
+
+  const existing = await db.user.findFirst({
+    where: {
+      clinicId: currentClinicAdmin.user.clinicId,
+      id: {
+        not: currentClinicAdmin.userId,
+      },
+      OR: [
+        { email: fields.email },
+        { ci: fields.ci },
+        ...(fields.phone ? [{ phone: fields.phone }] : []),
+      ],
+    },
+  });
+
+  if (existing) {
+    throw new Error("Ya existe un usuario con estos datos en la clínica");
+  }
+
   return db.clinicAdmin.update({
     where: { id: clinicAdminId },
     data: {
@@ -85,7 +112,16 @@ export const deleteClinicAdmin = async (input: DeleteClinicAdminSchema) => {
 
   await checkCanDeleteClinicAdmin(clinicAdminId);
 
-  return db.clinicAdmin.delete({
+  const clinicAdmin = await db.clinicAdmin.findUnique({
     where: { id: clinicAdminId },
+    select: { userId: true },
+  });
+
+  if (!clinicAdmin) {
+    throw new Error("Administrador no encontrado");
+  }
+
+  return await db.user.delete({
+    where: { id: clinicAdmin.userId },
   });
 };

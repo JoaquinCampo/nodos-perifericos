@@ -10,6 +10,8 @@ export default async function AdministratorsPage() {
     clinicId: session.user.clinic.id,
   });
 
+  const isClinicAdmin = !!session.user.clinicAdmin;
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -19,10 +21,12 @@ export default async function AdministratorsPage() {
             Gestiona los administradores de la clínica
           </p>
         </div>
-        <CreateAdminButton clinicId={session.user.clinic.id} />
+        {isClinicAdmin && (
+          <CreateAdminButton clinicId={session.user.clinic.id} />
+        )}
       </div>
 
-      <AdministratorsTable data={admins} />
+      <AdministratorsTable data={admins} isClinicAdmin={isClinicAdmin} />
     </div>
   );
 }

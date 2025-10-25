@@ -95,6 +95,7 @@ model HealthWorker {
     updatedAt DateTime @default(now()) @updatedAt
 
     healthWorkerClinicalDocuments HealthWorkerClinicalDocument[]
+    healthWorkerSpecialities HealthWorkerSpeciality[]
 }
 
 model ClinicAdmin {
@@ -104,6 +105,29 @@ model ClinicAdmin {
 
     createdAt DateTime @default(now())
     updatedAt DateTime @default(now()) @updatedAt
+}
+
+model HealthWorkerSpeciality {
+    id String @id @default(cuid())
+    healthWorkerId String
+    healthWorker HealthWorker @relation(fields: [healthWorkerId], references: [id], onDelete: Cascade)
+    specialityId String
+    speciality Speciality @relation(fields: [specialityId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+}
+
+model Speciality {
+    id String @id @default(cuid())
+    name String
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    healthWorkerSpecialities HealthWorkerSpeciality[]
+
+    @@unique([name])
 }
 
 model ClinicalDocument {

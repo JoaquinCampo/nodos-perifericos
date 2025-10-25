@@ -33,7 +33,8 @@ declare module "next-auth" {
     user: {
       id: string;
       ci: string;
-      name: string;
+      firstName: string;
+      lastName: string;
       email: string;
       phone: string | null;
       image: string | null;

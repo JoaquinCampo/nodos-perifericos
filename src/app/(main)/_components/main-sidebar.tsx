@@ -2,36 +2,53 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Users, Stethoscope, Shield, Settings, LogOut } from "lucide-react";
+import {
+  Users,
+  Stethoscope,
+  Shield,
+  Home,
+  Settings,
+  Hospital,
+} from "lucide-react";
+import { AuthenticatedPaths, AdminPaths } from "~/lib/constants/paths";
+import { SignOutButton } from "./sign-out-button";
 import { cn } from "~/lib/utils";
-import { AdminPaths } from "~/lib/constants/paths";
-import { Button } from "~/components/ui/button";
-import { signOut } from "next-auth/react";
 
 const menuItems = [
   {
+    label: "Inicio",
+    path: AuthenticatedPaths.Dashboard,
+    icon: Home,
+  },
+  {
     label: "Usuarios de Salud",
-    path: AdminPaths.HealthUsers,
+    path: AuthenticatedPaths.HealthUsers,
     icon: Users,
   },
   {
     label: "Profesionales de Salud",
-    path: AdminPaths.HealthWorkers,
+    path: AuthenticatedPaths.HealthWorkers,
     icon: Stethoscope,
   },
   {
     label: "Administradores",
-    path: AdminPaths.ClinicAdmins,
+    path: AuthenticatedPaths.ClinicAdmins,
     icon: Shield,
+    clinicAdminOnly: true,
   },
 ];
 
-export function AdminSidebar() {
+interface MainSidebarProps {
+  clinicName: string;
+  isClinicAdmin: boolean;
+}
+
+export function MainSidebar({ clinicName, isClinicAdmin }: MainSidebarProps) {
   const pathname = usePathname();
 
-  const handleSignOut = async () => {
-    await signOut({ callbackUrl: "/sign-in" });
-  };
+  const visibleMenuItems = menuItems.filter(
+    (item) => !item.clinicAdminOnly || isClinicAdmin,
+  );
 
   return (
     <aside className="flex h-screen w-72 flex-col border-r bg-gradient-to-b from-slate-50 to-slate-100/50 dark:from-slate-950 dark:to-slate-900/50">
@@ -39,14 +56,14 @@ export function AdminSidebar() {
       <div className="flex h-20 items-center border-b bg-white/50 px-6 backdrop-blur-sm dark:bg-slate-950/50">
         <div className="flex items-center gap-3">
           <div className="flex size-10 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg shadow-blue-500/30">
-            <Shield className="size-5 text-white" />
+            <Hospital className="size-5 text-white" />
           </div>
           <div>
             <h2 className="text-sm font-bold text-slate-900 dark:text-slate-100">
-              Panel Admin
+              Portal de Clínica
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              Gestión de clínica
+              {clinicName}
             </p>
           </div>
         </div>
@@ -59,7 +76,7 @@ export function AdminSidebar() {
             Gestión
           </p>
           <div className="space-y-1">
-            {menuItems.map((item) => {
+            {visibleMenuItems.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.path;
 
@@ -92,45 +109,40 @@ export function AdminSidebar() {
           </div>
         </div>
 
-        <div className="pt-4">
-          <p className="mb-2 px-3 text-xs font-semibold tracking-wider text-slate-500 uppercase dark:text-slate-400">
-            Sistema
-          </p>
-          <Link
-            href={AdminPaths.Configuration}
-            className={cn(
-              "group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200",
-              pathname === AdminPaths.Configuration
-                ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30"
-                : "text-slate-700 hover:bg-white hover:shadow-md dark:text-slate-300 dark:hover:bg-slate-800/50",
-            )}
-          >
-            <Settings
+        {isClinicAdmin && (
+          <div className="pt-4">
+            <p className="mb-2 px-3 text-xs font-semibold tracking-wider text-slate-500 uppercase dark:text-slate-400">
+              Sistema
+            </p>
+            <Link
+              href={AdminPaths.Configuration}
               className={cn(
-                "size-5 transition-transform duration-200 group-hover:scale-110",
+                "group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200",
                 pathname === AdminPaths.Configuration
-                  ? "text-white"
-                  : "text-slate-500 dark:text-slate-400",
+                  ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30"
+                  : "text-slate-700 hover:bg-white hover:shadow-md dark:text-slate-300 dark:hover:bg-slate-800/50",
               )}
-            />
-            <span className="flex-1">Configuración</span>
-            {pathname === AdminPaths.Configuration && (
-              <div className="size-2 rounded-full bg-white/80" />
-            )}
-          </Link>
-        </div>
+            >
+              <Settings
+                className={cn(
+                  "size-5 transition-transform duration-200 group-hover:scale-110",
+                  pathname === AdminPaths.Configuration
+                    ? "text-white"
+                    : "text-slate-500 dark:text-slate-400",
+                )}
+              />
+              <span className="flex-1">Configuración</span>
+              {pathname === AdminPaths.Configuration && (
+                <div className="size-2 rounded-full bg-white/80" />
+              )}
+            </Link>
+          </div>
+        )}
       </nav>
 
       {/* Footer */}
       <div className="border-t bg-white/50 p-4 backdrop-blur-sm dark:bg-slate-950/50">
-        <Button
-          variant="ghost"
-          className="w-full justify-center gap-3"
-          onClick={handleSignOut}
-        >
-          <LogOut className="size-5" />
-          <span className="font-medium">Cerrar Sesión</span>
-        </Button>
+        <SignOutButton />
       </div>
     </aside>
   );

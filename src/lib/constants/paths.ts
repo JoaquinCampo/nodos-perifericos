@@ -5,26 +5,25 @@ export const PublicPaths = {
 
 export type PublicPath = keyof typeof PublicPaths;
 
+export const AuthenticatedPaths = {
+  Dashboard: "/",
+  ClinicAdmins: "/administradores",
+  HealthWorkers: "/profesionales-de-salud",
+  HealthUsers: "/usuarios-de-salud",
+} as const;
+
+export type AuthenticatedPath = keyof typeof AuthenticatedPaths;
+
 export const AdminPaths = {
-  AdminDashboard: "/admin",
-  HealthUsers: "/admin/usuarios-de-salud",
-  HealthWorkers: "/admin/profesionales-de-salud",
-  ClinicAdmins: "/admin/administradores",
-  Configuration: "/admin/configuracion",
+  Configuration: "/configuracion",
 } as const;
 
 export type AdminPath = keyof typeof AdminPaths;
 
-export const UserPaths = {
-  Dashboard: "/",
-} as const;
-
-export type UserPath = keyof typeof UserPaths;
-
 export const Paths = {
   ...PublicPaths,
+  ...AuthenticatedPaths,
   ...AdminPaths,
-  ...UserPaths,
 } as const;
 
 export type Path = keyof typeof Paths;

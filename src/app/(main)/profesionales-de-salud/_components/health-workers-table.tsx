@@ -6,10 +6,10 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { DataTable } from "~/components/data-table";
 import { Button } from "~/components/ui/button";
-import { EditAdminButton } from "./buttons/edit-admin-button";
-import { DeleteAdminButton } from "./buttons/delete-admin-button";
+import { EditHealthWorkerButton } from "./buttons/edit-health-worker-button";
+import { DeleteHealthWorkerButton } from "./buttons/delete-health-worker-button";
 
-type Admin = {
+type HealthWorker = {
   id: string;
   user: {
     ci: string | null;
@@ -21,9 +21,14 @@ type Admin = {
     address: string | null;
     createdAt: Date;
   };
+  healthWorkerSpecialities: {
+    speciality: {
+      name: string;
+    };
+  }[];
 };
 
-const columns: ColumnDef<Admin>[] = [
+const createColumns = (isClinicAdmin: boolean): ColumnDef<HealthWorker>[] => [
   {
     accessorKey: "user.firstName",
     header: ({ column }) => (
@@ -83,6 +88,29 @@ const columns: ColumnDef<Admin>[] = [
     ),
   },
   {
+    accessorKey: "healthWorkerSpecialities",
+    header: "Especialidades",
+    cell: ({ row }) => {
+      const specialities = row.original.healthWorkerSpecialities;
+      return specialities.length > 0 ? (
+        <div className="flex flex-wrap gap-1">
+          {specialities.map((spec, idx) => (
+            <span
+              key={idx}
+              className="bg-primary/10 text-primary rounded-md px-2 py-1 text-xs capitalize"
+            >
+              {spec.speciality.name}
+            </span>
+          ))}
+        </div>
+      ) : (
+        <div className="text-muted-foreground text-xs">
+          (sin especialidades)
+        </div>
+      );
+    },
+  },
+  {
     accessorKey: "user.phone",
     header: "Teléfono",
     cell: ({ row }) =>
@@ -112,22 +140,31 @@ const columns: ColumnDef<Admin>[] = [
       </div>
     ),
   },
-  {
-    id: "actions",
-    header: "Acciones",
-    cell: ({ row }) => (
-      <div className="flex gap-2">
-        <EditAdminButton admin={row.original} />
-        <DeleteAdminButton admin={row.original} />
-      </div>
-    ),
-  },
+  ...(isClinicAdmin
+    ? [
+        {
+          id: "actions",
+          header: "Acciones",
+          cell: ({ row }: { row: { original: HealthWorker } }) => (
+            <div className="flex gap-2">
+              <EditHealthWorkerButton healthWorker={row.original} />
+              <DeleteHealthWorkerButton healthWorker={row.original} />
+            </div>
+          ),
+        } as ColumnDef<HealthWorker>,
+      ]
+    : []),
 ];
 
-interface AdministratorsTableProps {
-  data: Admin[];
+interface HealthWorkersTableProps {
+  data: HealthWorker[];
+  isClinicAdmin: boolean;
 }
 
-export function AdministratorsTable({ data }: AdministratorsTableProps) {
+export function HealthWorkersTable({
+  data,
+  isClinicAdmin,
+}: HealthWorkersTableProps) {
+  const columns = createColumns(isClinicAdmin);
   return <DataTable columns={columns} data={data} />;
 }

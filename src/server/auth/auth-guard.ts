@@ -3,9 +3,13 @@ import type {
   Path,
   PublicPath,
   AdminPath,
-  UserPath,
+  AuthenticatedPath,
 } from "~/lib/constants/paths";
-import { AdminPaths, PublicPaths, UserPaths } from "~/lib/constants/paths";
+import {
+  AdminPaths,
+  AuthenticatedPaths,
+  PublicPaths,
+} from "~/lib/constants/paths";
 import { auth } from "~/server/auth";
 import { type Session } from "next-auth";
 
@@ -17,8 +21,8 @@ export function isAdminPath(path: Path): path is AdminPath {
   return path in AdminPaths;
 }
 
-export function isUserPath(path: Path): path is UserPath {
-  return path in UserPaths;
+export function isAuthenticatedPath(path: Path): path is AuthenticatedPath {
+  return path in AuthenticatedPaths;
 }
 
 type AuthGuardResult<T extends Path> = T extends PublicPath ? null : Session;
@@ -29,8 +33,8 @@ export async function authGuard<T extends Path>(
   const session = await auth();
 
   const isUnauthenticated = !session;
-  const isAdmin = session?.user?.clinicAdmin;
-  const isUser = session?.user?.healthWorker;
+  const isClinicAdmin = session?.user?.clinicAdmin;
+  const isHealthWorker = session?.user?.healthWorker;
 
   if (isUnauthenticated) {
     if (isPublicPath(path)) {
@@ -40,21 +44,21 @@ export async function authGuard<T extends Path>(
     redirect(PublicPaths.SignIn);
   }
 
-  if (isAdmin) {
-    if (isAdminPath(path)) {
+  if (isHealthWorker) {
+    if (isAuthenticatedPath(path)) {
       return session as AuthGuardResult<T>;
     }
 
-    redirect(AdminPaths.AdminDashboard);
+    redirect(AuthenticatedPaths.Dashboard);
   }
 
-  if (isUser) {
-    if (isUserPath(path)) {
+  if (isClinicAdmin) {
+    if (isAdminPath(path) || isAuthenticatedPath(path)) {
       return session as AuthGuardResult<T>;
     }
 
-    redirect(UserPaths.Dashboard);
+    redirect(AdminPaths.Configuration);
   }
 
-  redirect(UserPaths.Dashboard);
+  return null as AuthGuardResult<T>;
 }
