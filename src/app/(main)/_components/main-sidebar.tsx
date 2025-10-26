@@ -12,7 +12,6 @@ import {
 } from "lucide-react";
 import { AuthenticatedPaths, AdminPaths } from "~/lib/constants/paths";
 import { SignOutButton } from "./sign-out-button";
-import { cn } from "~/lib/utils";
 
 const menuItems = [
   {
@@ -41,9 +40,19 @@ const menuItems = [
 interface MainSidebarProps {
   clinicName: string;
   isClinicAdmin: boolean;
+  configuration: {
+    sidebarTextColor: string;
+    sidebarBackgroundColor: string;
+    iconBackgroundColor: string;
+    iconTextColor: string;
+  };
 }
 
-export function MainSidebar({ clinicName, isClinicAdmin }: MainSidebarProps) {
+export function MainSidebar({
+  clinicName,
+  isClinicAdmin,
+  configuration,
+}: MainSidebarProps) {
   const pathname = usePathname();
 
   const visibleMenuItems = menuItems.filter(
@@ -51,18 +60,41 @@ export function MainSidebar({ clinicName, isClinicAdmin }: MainSidebarProps) {
   );
 
   return (
-    <aside className="flex h-screen w-72 flex-col border-r bg-gradient-to-b from-slate-50 to-slate-100/50 dark:from-slate-950 dark:to-slate-900/50">
+    <aside
+      className="flex h-screen w-72 flex-col border-r"
+      style={{ backgroundColor: configuration.sidebarBackgroundColor }}
+    >
       {/* Header */}
-      <div className="flex h-20 items-center border-b bg-white/50 px-6 backdrop-blur-sm dark:bg-slate-950/50">
+      <div
+        className="flex h-20 items-center border-b px-6"
+        style={{
+          backgroundColor: `${configuration.sidebarBackgroundColor}dd`,
+        }}
+      >
         <div className="flex items-center gap-3">
-          <div className="flex size-10 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg shadow-blue-500/30">
-            <Hospital className="size-5 text-white" />
+          <div
+            className="flex size-10 items-center justify-center rounded-lg shadow-lg"
+            style={{
+              backgroundColor: configuration.iconBackgroundColor,
+              boxShadow: `0 10px 15px -3px ${configuration.iconBackgroundColor}30`,
+            }}
+          >
+            <Hospital
+              className="size-5"
+              style={{ color: configuration.iconTextColor }}
+            />
           </div>
           <div>
-            <h2 className="text-sm font-bold text-slate-900 dark:text-slate-100">
+            <h2
+              className="text-sm font-bold"
+              style={{ color: configuration.sidebarTextColor }}
+            >
               Portal de Clínica
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p
+              className="text-xs opacity-60"
+              style={{ color: configuration.sidebarTextColor }}
+            >
               {clinicName}
             </p>
           </div>
@@ -72,7 +104,10 @@ export function MainSidebar({ clinicName, isClinicAdmin }: MainSidebarProps) {
       {/* Navigation */}
       <nav className="flex-1 space-y-1 p-4">
         <div className="mb-3">
-          <p className="mb-2 px-3 text-xs font-semibold tracking-wider text-slate-500 uppercase dark:text-slate-400">
+          <p
+            className="mb-2 px-3 text-xs font-semibold tracking-wider uppercase opacity-60"
+            style={{ color: configuration.sidebarTextColor }}
+          >
             Gestión
           </p>
           <div className="space-y-1">
@@ -84,24 +119,33 @@ export function MainSidebar({ clinicName, isClinicAdmin }: MainSidebarProps) {
                 <Link
                   key={item.path}
                   href={item.path}
-                  className={cn(
-                    "group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200",
+                  className="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 hover:shadow-md"
+                  style={
                     isActive
-                      ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30"
-                      : "text-slate-700 hover:bg-white hover:shadow-md dark:text-slate-300 dark:hover:bg-slate-800/50",
-                  )}
+                      ? {
+                          background: `linear-gradient(to right, ${configuration.iconBackgroundColor}, ${configuration.iconBackgroundColor}dd)`,
+                          color: configuration.iconTextColor,
+                          boxShadow: `0 10px 15px -3px ${configuration.iconBackgroundColor}30`,
+                        }
+                      : {
+                          color: configuration.sidebarTextColor,
+                        }
+                  }
                 >
                   <Icon
-                    className={cn(
-                      "size-5 transition-transform duration-200 group-hover:scale-110",
-                      isActive
-                        ? "text-white"
-                        : "text-slate-500 dark:text-slate-400",
-                    )}
+                    className="size-5 transition-transform duration-200 group-hover:scale-110"
+                    style={{
+                      color: isActive
+                        ? configuration.iconTextColor
+                        : `${configuration.sidebarTextColor}99`,
+                    }}
                   />
                   <span className="flex-1">{item.label}</span>
                   {isActive && (
-                    <div className="size-2 rounded-full bg-white/80" />
+                    <div
+                      className="size-2 rounded-full opacity-80"
+                      style={{ backgroundColor: configuration.iconTextColor }}
+                    />
                   )}
                 </Link>
               );
@@ -111,29 +155,42 @@ export function MainSidebar({ clinicName, isClinicAdmin }: MainSidebarProps) {
 
         {isClinicAdmin && (
           <div className="pt-4">
-            <p className="mb-2 px-3 text-xs font-semibold tracking-wider text-slate-500 uppercase dark:text-slate-400">
+            <p
+              className="mb-2 px-3 text-xs font-semibold tracking-wider uppercase opacity-60"
+              style={{ color: configuration.sidebarTextColor }}
+            >
               Sistema
             </p>
             <Link
               href={AdminPaths.Configuration}
-              className={cn(
-                "group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200",
+              className="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 hover:shadow-md"
+              style={
                 pathname === AdminPaths.Configuration
-                  ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30"
-                  : "text-slate-700 hover:bg-white hover:shadow-md dark:text-slate-300 dark:hover:bg-slate-800/50",
-              )}
+                  ? {
+                      background: `linear-gradient(to right, ${configuration.iconBackgroundColor}, ${configuration.iconBackgroundColor}dd)`,
+                      color: configuration.iconTextColor,
+                      boxShadow: `0 10px 15px -3px ${configuration.iconBackgroundColor}30`,
+                    }
+                  : {
+                      color: configuration.sidebarTextColor,
+                    }
+              }
             >
               <Settings
-                className={cn(
-                  "size-5 transition-transform duration-200 group-hover:scale-110",
-                  pathname === AdminPaths.Configuration
-                    ? "text-white"
-                    : "text-slate-500 dark:text-slate-400",
-                )}
+                className="size-5 transition-transform duration-200 group-hover:scale-110"
+                style={{
+                  color:
+                    pathname === AdminPaths.Configuration
+                      ? configuration.iconTextColor
+                      : `${configuration.sidebarTextColor}99`,
+                }}
               />
               <span className="flex-1">Configuración</span>
               {pathname === AdminPaths.Configuration && (
-                <div className="size-2 rounded-full bg-white/80" />
+                <div
+                  className="size-2 rounded-full opacity-80"
+                  style={{ backgroundColor: configuration.iconTextColor }}
+                />
               )}
             </Link>
           </div>
@@ -141,7 +198,12 @@ export function MainSidebar({ clinicName, isClinicAdmin }: MainSidebarProps) {
       </nav>
 
       {/* Footer */}
-      <div className="border-t bg-white/50 p-4 backdrop-blur-sm dark:bg-slate-950/50">
+      <div
+        className="border-t p-4"
+        style={{
+          backgroundColor: `${configuration.sidebarBackgroundColor}dd`,
+        }}
+      >
         <SignOutButton />
       </div>
     </aside>

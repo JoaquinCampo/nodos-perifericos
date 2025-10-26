@@ -162,29 +162,16 @@ model Configuration {
     clinic   Clinic @relation(fields: [clinicId], references: [id], onDelete: Cascade)
 
     // Branding
-    logo    String? // URL or path to logo image
-    title   String? // Custom title for the clinic portal
-    favicon String? // URL or path to favicon
+    portalTitle String @default("Portal de Clínica") // Custom title for the clinic portal (shown in browser tab)
 
-    // Colors (stored as hex values, e.g., #FF5733)
-    primaryColor    String? @default("#3B82F6") // Main brand color
-    secondaryColor  String? @default("#10B981") // Secondary accent color
-    headerColor     String? @default("#1F2937") // Header background color
-    backgroundColor String? @default("#F9FAFB") // Page background color
-    sidebarColor    String? @default("#FFFFFF") // Sidebar background color
-    textColor       String? @default("#111827") // Primary text color
-    linkColor       String? @default("#3B82F6") // Link color
-    buttonColor     String? @default("#3B82F6") // Primary button color
-    buttonTextColor String? @default("#FFFFFF") // Button text color
-
-    // Typography
-    fontFamily String? @default("Inter") // Font family name
-    fontSize   String? @default("16px") // Base font size
-
-    // Layout
-    headerHeight String? @default("64px") // Header height
-    sidebarWidth String? @default("256px") // Sidebar width
-    borderRadius String? @default("8px") // Border radius for elements
+    // Customizable colors (stored as hex values, e.g., #FF5733)
+    sidebarTextColor       String @default("#111827") // Sidebar text color (slate-800)
+    sidebarBackgroundColor String @default("#F1F5F9") // Sidebar background color (slate-100)
+    backgroundColor        String @default("#F8FAFC") // Main page background color (slate-50)
+    cardBackgroundColor    String @default("#FFFFFF") // Card background color (white)
+    cardTextColor          String @default("#111827") // Card text color (slate-800)
+    iconTextColor          String @default("#FFFFFF") // Icon text color (white)
+    iconBackgroundColor    String @default("#3B82F6") // Icon background color (blue-500, also used for selected path)
 
     createdAt DateTime @default(now())
     updatedAt DateTime @default(now()) @updatedAt

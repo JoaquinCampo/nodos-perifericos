@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { Paths } from "~/lib/constants/paths";
 import { actionClient } from "~/lib/safe-action";
 import * as clinicAdminController from "~/server/controllers/clinic-admin";
 import {
@@ -15,7 +16,7 @@ export const createClinicAdminAction = actionClient
     try {
       const createdClinicAdmin =
         await clinicAdminController.createClinicAdmin(parsedInput);
-      revalidatePath("/admin/administradores");
+      revalidatePath(Paths.ClinicAdmins);
       return createdClinicAdmin;
     } catch (error) {
       if (error instanceof Error) {
@@ -31,7 +32,7 @@ export const updateClinicAdminAction = actionClient
     try {
       const updatedClinicAdmin =
         await clinicAdminController.updateClinicAdmin(parsedInput);
-      revalidatePath("/admin/administradores");
+      revalidatePath(Paths.ClinicAdmins);
       return updatedClinicAdmin;
     } catch (error) {
       if (error instanceof Error) {
@@ -47,7 +48,7 @@ export const deleteClinicAdminAction = actionClient
     try {
       const deletedClinicAdmin =
         await clinicAdminController.deleteClinicAdmin(parsedInput);
-      revalidatePath("/admin/administradores");
+      revalidatePath(Paths.ClinicAdmins);
       return deletedClinicAdmin;
     } catch (error) {
       if (error instanceof Error) {

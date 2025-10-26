@@ -13,7 +13,7 @@ function calculateCheckDigit(ci: string): number {
 }
 
 function isValidCheckDigit(ci: string): boolean {
-  const cleanCi = ci.replace("-", "");
+  const cleanCi = ci.replace(/[-.]/g, "");
 
   if (cleanCi.length !== 8) {
     return false;
@@ -27,18 +27,21 @@ function isValidCheckDigit(ci: string): boolean {
 }
 
 export function formatCi(ci: string): string {
-  const cleanCi = ci.replace("-", "");
+  const cleanCi = ci.replace(/[-.]/g, "");
   return `${cleanCi.slice(0, 7)}-${cleanCi.slice(7)}`;
 }
 
 export function cleanCi(ci: string): string {
-  return ci.replace("-", "");
+  return ci.replace(/[-.]/g, "");
 }
 
 export const ciSchema = z
   .string()
   .min(1, "CI is required")
-  .regex(/^\d{7}-?\d$/, "CI debe estar en el formato 1234567-8 o 12345678")
+  .regex(
+    /^[\d.]{7,9}[.-]?\d$/,
+    "CI debe estar en el formato 1234567-8, 1.234.567-8 o 12345678",
+  )
   .refine(
     isValidCheckDigit,
     "CI inválido: el dígito de verificación no coincide",

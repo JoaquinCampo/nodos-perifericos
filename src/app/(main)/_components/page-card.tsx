@@ -7,23 +7,48 @@ interface PageCardProps {
     icon: React.ComponentType<{ className?: string }>;
     path: string;
   };
+  configuration: {
+    cardBackgroundColor: string;
+    cardTextColor: string;
+    iconBackgroundColor: string;
+    iconTextColor: string;
+  };
 }
 
-export function PageCard({ page }: PageCardProps) {
+export function PageCard({ page, configuration }: PageCardProps) {
   const Icon = page.icon;
   return (
     <Link
       href={page.path}
-      className="group bg-card text-card-foreground block rounded-xl border p-8 shadow-md transition-all hover:scale-[1.02] hover:border-blue-300 hover:shadow-xl dark:hover:border-blue-700"
+      className="group block rounded-xl p-8 shadow-md transition-all hover:scale-[1.02] hover:shadow-xl"
+      style={{
+        backgroundColor: configuration.cardBackgroundColor,
+        borderWidth: "1px",
+        borderStyle: "solid",
+        color: configuration.cardTextColor,
+      }}
     >
       <div className="flex flex-col items-center text-center">
-        <div className="mb-4 flex size-16 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30 transition-transform group-hover:scale-110">
+        <div
+          className="mb-4 flex size-16 items-center justify-center rounded-2xl shadow-lg transition-transform group-hover:scale-110"
+          style={{
+            background: `linear-gradient(to bottom right, ${configuration.iconBackgroundColor}, ${configuration.iconBackgroundColor}dd)`,
+            boxShadow: `0 10px 15px -3px ${configuration.iconBackgroundColor}30`,
+            color: configuration.iconTextColor,
+          }}
+        >
           <Icon className="size-8" />
         </div>
-        <h3 className="text-xl font-bold transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400">
+        <h3
+          className="text-xl font-bold transition-opacity group-hover:opacity-80"
+          style={{ color: configuration.cardTextColor }}
+        >
           {page.title}
         </h3>
-        <p className="text-muted-foreground mt-3 text-sm leading-relaxed">
+        <p
+          className="mt-3 text-sm leading-relaxed opacity-70"
+          style={{ color: configuration.cardTextColor }}
+        >
           {page.description}
         </p>
       </div>

@@ -2,6 +2,7 @@ import { Users, Stethoscope, Shield, Settings } from "lucide-react";
 import { authGuard } from "~/server/auth/auth-guard";
 import { AuthenticatedPaths, AdminPaths } from "~/lib/constants/paths";
 import { PageCard } from "./_components/page-card";
+import { DEFAULT_CONFIGURATION } from "~/lib/constants/configuration";
 
 const pages = (isClinicAdmin: boolean) => [
   {
@@ -43,8 +44,18 @@ export default async function DashboardPage() {
   const session = await authGuard("Dashboard");
 
   const isClinicAdmin = !!session.user.clinicAdmin;
-
   const visiblePages = pages(isClinicAdmin).filter((page) => page.visible);
+
+  const config = session.user.clinic.configuration;
+
+  const cardConfig = {
+    cardBackgroundColor:
+      config?.cardBackgroundColor ?? DEFAULT_CONFIGURATION.cardBackgroundColor,
+    cardTextColor: config?.cardTextColor ?? DEFAULT_CONFIGURATION.cardTextColor,
+    iconBackgroundColor:
+      config?.iconBackgroundColor ?? DEFAULT_CONFIGURATION.iconBackgroundColor,
+    iconTextColor: config?.iconTextColor ?? DEFAULT_CONFIGURATION.iconTextColor,
+  };
 
   return (
     <div className="space-y-8">
@@ -59,7 +70,7 @@ export default async function DashboardPage() {
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         {visiblePages.map((page) => (
-          <PageCard key={page.path} page={page} />
+          <PageCard key={page.path} page={page} configuration={cardConfig} />
         ))}
       </div>
     </div>

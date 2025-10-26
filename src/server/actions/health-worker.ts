@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { Paths } from "~/lib/constants/paths";
 import { actionClient } from "~/lib/safe-action";
 import * as healthWorkerController from "~/server/controllers/health-worker";
 import {
@@ -15,7 +16,7 @@ export const createHealthWorkerAction = actionClient
     try {
       const createdHealthWorker =
         await healthWorkerController.createHealthWorker(parsedInput);
-      revalidatePath("/profesionales-de-salud");
+      revalidatePath(Paths.HealthWorkers);
       return createdHealthWorker;
     } catch (error) {
       if (error instanceof Error) {
@@ -31,7 +32,7 @@ export const updateHealthWorkerAction = actionClient
     try {
       const updatedHealthWorker =
         await healthWorkerController.updateHealthWorker(parsedInput);
-      revalidatePath("/profesionales-de-salud");
+      revalidatePath(Paths.HealthWorkers);
       return updatedHealthWorker;
     } catch (error) {
       if (error instanceof Error) {
@@ -47,7 +48,7 @@ export const deleteHealthWorkerAction = actionClient
     try {
       const deletedHealthWorker =
         await healthWorkerController.deleteHealthWorker(parsedInput);
-      revalidatePath("/profesionales-de-salud");
+      revalidatePath(Paths.HealthWorkers);
       return deletedHealthWorker;
     } catch (error) {
       if (error instanceof Error) {

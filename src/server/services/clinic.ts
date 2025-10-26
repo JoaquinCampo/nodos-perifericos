@@ -22,6 +22,9 @@ export const createClinic = async (input: CreateClinicSchema) => {
           },
         },
       },
+      configuration: {
+        create: {},
+      },
     },
   });
 };

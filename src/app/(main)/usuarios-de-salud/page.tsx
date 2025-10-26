@@ -1,4 +1,4 @@
-export default function HealthUsersPage() {
+export default async function HealthUsersPage() {
   return (
     <div className="space-y-6">
       <div>
@@ -14,4 +14,3 @@ export default function HealthUsersPage() {
     </div>
   );
 }
-
