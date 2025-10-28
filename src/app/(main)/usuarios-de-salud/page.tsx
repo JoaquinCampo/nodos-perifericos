@@ -1,4 +1,25 @@
-export default async function HealthUsersPage() {
+import { fetchHealthUsers } from "~/lib/hcen-api/health-users";
+import { HealthUsersTable } from "./_components/health-users-table";
+import { HealthUsersFilters } from "./_components/filters";
+import type { SearchParams } from "nuqs";
+import { loadSearchParams } from "./_components/search-params";
+
+interface HealthUsersPageProps {
+  searchParams: Promise<SearchParams>;
+}
+
+export default async function HealthUsersPage(props: HealthUsersPageProps) {
+  const { searchParams: searchParamsPromise } = props;
+
+  const searchParams = await loadSearchParams(searchParamsPromise);
+
+  const healthUsersResponse = await fetchHealthUsers(
+    searchParams.pageIndex + 1,
+    searchParams.pageSize,
+    searchParams.username,
+    searchParams.ci,
+  );
+
   return (
     <div className="space-y-6">
       <div>
@@ -8,9 +29,12 @@ export default async function HealthUsersPage() {
         </p>
       </div>
 
-      <div className="text-muted-foreground rounded-lg border border-dashed p-12 text-center">
-        <p className="text-lg">Esta página está en desarrollo</p>
-      </div>
+      <HealthUsersFilters />
+
+      <HealthUsersTable
+        data={healthUsersResponse}
+        searchParams={searchParams}
+      />
     </div>
   );
 }

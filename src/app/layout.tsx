@@ -3,6 +3,7 @@ import "~/styles/globals.css";
 import { type Metadata } from "next";
 import { Geist } from "next/font/google";
 import { Toaster } from "~/components/ui/sonner";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 export const metadata: Metadata = {
   title: "Portal de clínica",
@@ -21,7 +22,7 @@ export default function RootLayout({
   return (
     <html lang="es" className={`${geist.variable}`} suppressHydrationWarning>
       <body className="bg-background text-foreground min-h-screen font-sans antialiased">
-        {children}
+        <NuqsAdapter>{children}</NuqsAdapter>
         <Toaster />
       </body>
     </html>

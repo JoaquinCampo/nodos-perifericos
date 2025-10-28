@@ -19,6 +19,8 @@ export const env = createEnv({
     EMAIL_PASSWORD: z.string(),
     EMAIL_FROM: z.string(),
     HCEN_BASE_URL: z.string().url(),
+    HCEN_APP_USERNAME: z.string(),
+    HCEN_APP_PASSWORD: z.string(),
   },
 
   /**
@@ -45,6 +47,8 @@ export const env = createEnv({
     EMAIL_PASSWORD: process.env.EMAIL_PASSWORD,
     EMAIL_FROM: process.env.EMAIL_FROM,
     HCEN_BASE_URL: process.env.HCEN_BASE_URL,
+    HCEN_APP_USERNAME: process.env.HCEN_APP_USERNAME,
+    HCEN_APP_PASSWORD: process.env.HCEN_APP_PASSWORD,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
