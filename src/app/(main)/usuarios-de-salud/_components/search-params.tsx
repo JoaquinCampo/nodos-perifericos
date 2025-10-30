@@ -11,8 +11,9 @@ export const paginationParams = {
 };
 
 export const filterParams = {
-  username: parseAsString.withDefault(""),
+  name: parseAsString.withDefault(""),
   ci: parseAsString.withDefault(""),
+  clinic: parseAsString.withDefault(""),
 };
 
 export const searchParams = {

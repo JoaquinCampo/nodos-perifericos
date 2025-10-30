@@ -2,10 +2,13 @@
 
 import {
   type ColumnDef,
+  type SortingState,
   flexRender,
   getCoreRowModel,
+  getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { useState } from "react";
 import { useQueryStates, parseAsInteger } from "nuqs";
 
 import {
@@ -27,7 +30,7 @@ import {
 import { cn } from "~/lib/utils";
 
 const paginationParams = {
-  pageIndex: parseAsInteger.withDefault(1),
+  pageIndex: parseAsInteger.withDefault(0),
   pageSize: parseAsInteger.withDefault(20),
 };
 
@@ -58,19 +61,24 @@ export function ServerDataTable<TData, TValue>(
   const [paginationState, setPaginationState] =
     useQueryStates(paginationParams);
 
+  const [sorting, setSorting] = useState<SortingState>([]);
+
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     manualPagination: true,
     rowCount: pagination.totalCount,
     pageCount: pagination.totalPages,
     state: {
       pagination: paginationState,
+      sorting,
     },
     onPaginationChange: (updater) => {
       void setPaginationState(updater, { shallow: false });
     },
+    onSortingChange: setSorting,
   });
 
   return (
@@ -152,8 +160,11 @@ export function ServerDataTable<TData, TValue>(
         </div>
 
         <div className="flex items-center justify-center text-sm font-medium sm:w-[100px]">
-          Page {table.getState().pagination.pageIndex + 1} of{" "}
-          {table.getPageCount()}
+          Page{" "}
+          {table.getPageCount() > 0
+            ? table.getState().pagination.pageIndex + 1
+            : 0}{" "}
+          of {table.getPageCount()}
         </div>
 
         <div className="flex items-center justify-center space-x-1 sm:space-x-2">

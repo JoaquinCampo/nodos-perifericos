@@ -9,8 +9,8 @@ import { cleanCi } from "~/lib/validation/ci";
 export function HealthUsersFilters() {
   const [filterState, setFilterState] = useQueryStates(filterParams);
 
-  const handleUsernameChange = (value: string) => {
-    void setFilterState({ username: value }, { shallow: false });
+  const handleNameChange = (value: string) => {
+    void setFilterState({ name: value }, { shallow: false });
   };
 
   const handleCiChange = (value: string) => {
@@ -36,8 +36,8 @@ export function HealthUsersFilters() {
         <Input
           id="username"
           placeholder="Ingrese nombre del usuario..."
-          value={filterState.username}
-          onChange={(e) => handleUsernameChange(e.target.value)}
+          value={filterState.name}
+          onChange={(e) => handleNameChange(e.target.value)}
         />
       </div>
     </div>

@@ -13,12 +13,10 @@ export default async function HealthUsersPage(props: HealthUsersPageProps) {
 
   const searchParams = await loadSearchParams(searchParamsPromise);
 
-  const healthUsersResponse = await fetchHealthUsers(
-    searchParams.pageIndex + 1,
-    searchParams.pageSize,
-    searchParams.username,
-    searchParams.ci,
-  );
+  const healthUsersResponse = await fetchHealthUsers({
+    ...searchParams,
+    pageIndex: searchParams.pageIndex + 1,
+  });
 
   return (
     <div className="space-y-6">

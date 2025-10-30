@@ -6,6 +6,7 @@ import type {
   AuthenticatedPath,
 } from "~/lib/constants/paths";
 import {
+  Paths,
   AdminPaths,
   AuthenticatedPaths,
   PublicPaths,
@@ -41,7 +42,7 @@ export async function authGuard<T extends Path>(
       return null as AuthGuardResult<T>;
     }
 
-    redirect(PublicPaths.SignIn);
+    redirect(Paths.SignIn);
   }
 
   if (isHealthWorker) {
@@ -49,7 +50,7 @@ export async function authGuard<T extends Path>(
       return session as AuthGuardResult<T>;
     }
 
-    redirect(AuthenticatedPaths.Dashboard);
+    redirect(Paths.Dashboard);
   }
 
   if (isClinicAdmin) {
@@ -57,7 +58,7 @@ export async function authGuard<T extends Path>(
       return session as AuthGuardResult<T>;
     }
 
-    redirect(AdminPaths.Configuration);
+    redirect(Paths.Dashboard);
   }
 
   return null as AuthGuardResult<T>;

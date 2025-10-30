@@ -16,8 +16,7 @@ export type HealthUser = {
   dateOfBirth: string;
   createdAt: string;
   updatedAt: string;
-  clinicIds: string[];
-  clinicalDocumentIds: string[];
+  clinicNames: string[];
 };
 
 export type FindAllHealthUsersResponse = {
@@ -30,53 +29,26 @@ export type FindAllHealthUsersResponse = {
   hasPrevious: boolean;
 };
 
-export const fetchHealthUsers = async (
-  page = 1,
-  size = 20,
-  username?: string,
-  ci?: string,
-): Promise<FindAllHealthUsersResponse> => {
-  const searchParams: Record<string, string> = {
-    page: page.toString(),
-    size: size.toString(),
+export const fetchHealthUsers = async (searchParams: {
+  pageIndex: number;
+  pageSize: number;
+  name?: string;
+  ci?: string;
+  clinic?: string;
+}): Promise<FindAllHealthUsersResponse> => {
+  const { pageIndex, pageSize, name, ci, clinic } = searchParams;
+
+  const normalizedSearchParams: Record<string, string> = {
+    pageIndex: pageIndex.toString(),
+    pageSize: pageSize.toString(),
+    ...(name?.trim() && { name: name.trim() }),
+    ...(ci?.trim() && { ci: ci.trim() }),
+    ...(clinic?.trim() && { clinic: clinic.trim() }),
   };
-
-  if (username?.trim()) {
-    // For username search, we need to use the /search endpoint
-    // This returns a List<HealthUserDTO>, so we need to wrap it in pagination format
-    const searchResults = await fetchApi<HealthUser[]>({
-      path: "health-users/search",
-      method: "GET",
-      searchParams: {
-        name: username.trim(),
-      },
-    });
-
-    // Calculate pagination for search results
-    const totalItems = searchResults.length;
-    const totalPages = Math.ceil(totalItems / size);
-    const startIndex = (page - 1) * size;
-    const endIndex = startIndex + size;
-    const paginatedItems = searchResults.slice(startIndex, endIndex);
-
-    return {
-      items: paginatedItems,
-      page,
-      size,
-      totalItems,
-      totalPages,
-      hasNext: page < totalPages,
-      hasPrevious: page > 1,
-    };
-  }
-
-  if (ci?.trim()) {
-    searchParams.document = ci.trim();
-  }
 
   return await fetchApi<FindAllHealthUsersResponse>({
     path: "health-users",
     method: "GET",
-    searchParams,
+    searchParams: normalizedSearchParams,
   });
 };
