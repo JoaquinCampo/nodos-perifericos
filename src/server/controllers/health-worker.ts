@@ -23,3 +23,7 @@ export const updateHealthWorker = async (input: UpdateHealthWorkerSchema) => {
 export const deleteHealthWorker = async (input: DeleteHealthWorkerSchema) => {
   return await healthWorkerService.deleteHealthWorker(input);
 };
+
+export const findHealthWorkerByCi = async (ci: string, clinicName: string) => {
+  return await healthWorkerService.findHealthWorkerByCi(ci, clinicName);
+};

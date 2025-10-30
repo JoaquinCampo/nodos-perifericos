@@ -94,8 +94,8 @@ model HealthWorker {
     createdAt DateTime @default(now())
     updatedAt DateTime @default(now()) @updatedAt
 
-    healthWorkerClinicalDocuments HealthWorkerClinicalDocument[]
     healthWorkerSpecialities HealthWorkerSpeciality[]
+    clinicalDocuments ClinicalDocument[]
 }
 
 model ClinicAdmin {
@@ -133,28 +133,23 @@ model Speciality {
 model ClinicalDocument {
     id String @id @default(cuid())
 
-    title       String
-    description String?
-    content     String? @db.Text
-    contentUrl  String?
+    title           String
+    description     String?
+    content         String? @db.Text
+    contentType     String?
+    contentUrl      String?
 
-    healthUserId String 
-
-    clinicId                      String
-    clinic                        Clinic                         @relation(fields: [clinicId], references: [id], onDelete: Cascade)
-    healthWorkerClinicalDocuments HealthWorkerClinicalDocument[]
+    healthUserCi    String
+    clinicId        String
+    clinic          Clinic  @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+    healthWorkerId  String
+    healthWorker HealthWorker @relation(fields: [healthWorkerId], references: [id])
 
     createdAt DateTime @default(now())
     updatedAt DateTime @default(now()) @updatedAt
 }
 
-model HealthWorkerClinicalDocument {
-    id                 String           @id @default(cuid())
-    clinicalDocumentId String
-    clinicalDocument   ClinicalDocument @relation(fields: [clinicalDocumentId], references: [id], onDelete: Cascade)
-    healthWorkerId     String
-    healthWorker       HealthWorker     @relation(fields: [healthWorkerId], references: [id], onDelete: Cascade)
-}
+
 
 model Configuration {
     id       String @id @default(cuid())
@@ -184,3 +179,5 @@ model VerificationToken {
 
     @@unique([identifier, token])
 }
+
+

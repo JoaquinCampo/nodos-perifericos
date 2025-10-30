@@ -28,3 +28,9 @@ export const createClinic = async (input: CreateClinicSchema) => {
     },
   });
 };
+
+export const findClinicByName = async (clinicName: string) => {
+  return await db.clinic.findFirst({
+    where: { name: clinicName },
+  });
+};

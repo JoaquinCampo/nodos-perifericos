@@ -159,3 +159,19 @@ export const deleteHealthWorker = async (input: DeleteHealthWorkerSchema) => {
     where: { id: healthWorker.userId },
   });
 };
+
+export const findHealthWorkerByCi = async (ci: string, clinicName: string) => {
+  return await db.healthWorker.findFirst({
+    where: {
+      user: {
+        ci,
+        clinic: {
+          name: clinicName,
+        },
+      },
+    },
+    include: {
+      user: true,
+    },
+  });
+};

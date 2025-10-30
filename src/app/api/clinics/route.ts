@@ -20,3 +20,20 @@ export async function POST(request: Request) {
     );
   }
 }
+
+export async function GET() {
+  try {
+    const clinics = await clinicController.findAllClinics();
+
+    return NextResponse.json(clinics, { status: 200 });
+  } catch (error) {
+    if (error instanceof Error) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+
+    return NextResponse.json(
+      { error: "An unexpected error occurred" },
+      { status: 500 },
+    );
+  }
+}
