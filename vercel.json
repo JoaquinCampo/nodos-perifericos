@@ -1,0 +1,9 @@
+{
+  "buildCommand": "prisma generate && prisma db push --accept-data-loss && next build",
+  "outputDirectory": ".next",
+  "framework": "nextjs",
+  "installCommand": "pnpm install",
+  "env": {
+    "ENABLE_EXPERIMENTAL_COREPACK": "1"
+  }
+}
