@@ -43,12 +43,24 @@ export const fetchHealthUsers = async (searchParams: {
     pageSize: pageSize.toString(),
     ...(name?.trim() && { name: name.trim() }),
     ...(ci?.trim() && { ci: ci.trim() }),
-    ...(clinic?.trim() && { clinic: clinic.trim() }),
+    ...(clinic?.trim() && { clinicName: clinic?.trim() }), // HCEN uses clinicName
   };
 
-  return await fetchApi<FindAllHealthUsersResponse>({
+  // HCEN returns just the array of users, not paginated metadata
+  const users = await fetchApi<HealthUser[]>({
     path: "health-users",
     method: "GET",
     searchParams: normalizedSearchParams,
   });
+
+  // Transform to expected paginated format
+  return {
+    items: users,
+    page: pageIndex,
+    size: pageSize,
+    totalItems: users.length, // HCEN doesn't provide total count
+    totalPages: 1, // HCEN doesn't provide pagination info
+    hasNext: false,
+    hasPrevious: false,
+  };
 };
