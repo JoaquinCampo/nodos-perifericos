@@ -64,3 +64,23 @@ export const fetchHealthUsers = async (searchParams: {
     hasPrevious: false,
   };
 };
+
+export type CreateHealthUserData = {
+  ci: string;
+  firstName: string;
+  lastName: string;
+  gender: "MALE" | "FEMALE" | "OTHER";
+  email: string;
+  phone?: string;
+  address?: string;
+  dateOfBirth: string; // ISO date string
+  clinicNames: string[];
+};
+
+export const createHealthUser = async (data: CreateHealthUserData): Promise<HealthUser> => {
+  return await fetchApi<HealthUser>({
+    path: "health-users",
+    method: "POST",
+    body: data,
+  });
+};
