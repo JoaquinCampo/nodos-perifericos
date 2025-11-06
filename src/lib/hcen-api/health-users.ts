@@ -1,12 +1,10 @@
 import { fetchApi } from "~/lib/hcen-api";
 
 type Gender = "MALE" | "FEMALE" | "OTHER";
-type DocumentType = "ID" | "PASSPORT";
 
 export type HealthUser = {
   id: string;
-  document: string;
-  documentType: DocumentType;
+  ci: string;
   firstName: string;
   lastName: string;
   gender: Gender;
@@ -73,7 +71,7 @@ export type CreateHealthUserData = {
   email: string;
   phone?: string;
   address?: string;
-  dateOfBirth: string; // ISO date string
+  dateOfBirth: string; // YYYY-MM-DD format
   clinicNames: string[];
 };
 

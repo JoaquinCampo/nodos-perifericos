@@ -38,15 +38,30 @@ import {
 } from "~/server/schemas/health-user";
 import { createHealthUserAction } from "~/server/actions/health-user";
 import { DateTimePicker } from "~/components/ui/date";
+import type { Configuration } from "@prisma/client";
+import { DEFAULT_CONFIGURATION } from "~/lib/constants/configuration";
 
 interface CreateHealthUserButtonProps {
   clinicName: string;
+  clinicConfig?: Configuration | null;
 }
 
 export function CreateHealthUserButton({
   clinicName,
+  clinicConfig,
 }: CreateHealthUserButtonProps) {
   const [open, setOpen] = useState(false);
+
+  // Get clinic card colors with fallbacks to defaults
+  const cardBackgroundColor = clinicConfig?.cardBackgroundColor ?? DEFAULT_CONFIGURATION.cardBackgroundColor;
+  const cardTextColor = clinicConfig?.cardTextColor ?? DEFAULT_CONFIGURATION.cardTextColor;
+
+  console.log('Clinic config theming:', {
+    clinicConfig,
+    cardBackgroundColor,
+    cardTextColor,
+    hasCustomConfig: !!clinicConfig
+  });
 
   const form = useForm({
     resolver: zodResolver(createHealthUserSchema),
@@ -88,7 +103,14 @@ export function CreateHealthUserButton({
           Crear Usuario de Salud
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-h-[90vh] overflow-y-auto">
+      <DialogContent
+        className="max-h-[90vh] overflow-y-auto"
+        style={{
+          backgroundColor: cardBackgroundColor,
+          color: cardTextColor,
+          border: `1px solid ${cardTextColor}20`, // Subtle border
+        }}
+      >
         <DialogHeader>
           <DialogTitle>Crear Usuario de Salud</DialogTitle>
           <DialogDescription>

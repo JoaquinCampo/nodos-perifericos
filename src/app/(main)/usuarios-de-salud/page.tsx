@@ -18,10 +18,11 @@ export default async function HealthUsersPage(props: HealthUsersPageProps) {
 
   const healthUsersResponse = await fetchHealthUsers({
     ...searchParams,
-    pageIndex: searchParams.pageIndex + 1,
+    pageIndex: searchParams.pageIndex,
   });
 
   const isClinicAdmin = !!session.user.clinicAdmin;
+  const clinicConfig = session.user.clinic.configuration;
 
   return (
     <div className="space-y-6">
@@ -33,7 +34,10 @@ export default async function HealthUsersPage(props: HealthUsersPageProps) {
           </p>
         </div>
         {isClinicAdmin && (
-          <CreateHealthUserButton clinicName={session.user.clinic.name} />
+          <CreateHealthUserButton
+            clinicName={session.user.clinic.name}
+            clinicConfig={clinicConfig}
+          />
         )}
       </div>
 

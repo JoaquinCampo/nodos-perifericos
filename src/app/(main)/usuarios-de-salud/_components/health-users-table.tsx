@@ -37,7 +37,7 @@ const createColumns = (): ColumnDef<HealthUser>[] => [
     },
   },
   {
-    accessorKey: "document",
+    accessorKey: "ci",
     header: ({ column }) => (
       <Button
         variant="ghost"
@@ -50,7 +50,7 @@ const createColumns = (): ColumnDef<HealthUser>[] => [
     ),
     cell: ({ row }) => (
       <div>
-        {row.original.document} ({row.original.documentType})
+        {row.original.ci}
       </div>
     ),
   },
