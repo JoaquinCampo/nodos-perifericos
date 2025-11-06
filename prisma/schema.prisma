@@ -138,6 +138,10 @@ model ClinicalDocument {
     content         String? @db.Text
     contentType     String?
     contentUrl      String?
+    documentType    String  // consultation, lab_results, radiology, prescription, etc.
+    status          String @default("draft")  // draft, final, signed
+    s3Key           String?  // S3 object key for deletion
+    fileSize        Int?     // File size in bytes
 
     healthUserCi    String
     clinicId        String

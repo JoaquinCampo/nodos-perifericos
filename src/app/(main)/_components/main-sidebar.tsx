@@ -9,6 +9,7 @@ import {
   Home,
   Settings,
   Hospital,
+  FileText,
 } from "lucide-react";
 import { AuthenticatedPaths, AdminPaths } from "~/lib/constants/paths";
 import { SignOutButton } from "./sign-out-button";
@@ -28,6 +29,11 @@ const menuItems = [
     label: "Profesionales de Salud",
     path: AuthenticatedPaths.HealthWorkers,
     icon: Stethoscope,
+  },
+  {
+    label: "Documentos Clínicos",
+    path: AuthenticatedPaths.ClinicalDocuments,
+    icon: FileText,
   },
   {
     label: "Administradores",

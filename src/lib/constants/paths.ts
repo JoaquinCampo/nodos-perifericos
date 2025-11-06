@@ -10,6 +10,7 @@ export const AuthenticatedPaths = {
   ClinicAdmins: "/administradores",
   HealthWorkers: "/profesionales-de-salud",
   HealthUsers: "/usuarios-de-salud",
+  ClinicalDocuments: "/profesionales-de-salud/documentos-clinicos",
 } as const;
 
 export type AuthenticatedPath = keyof typeof AuthenticatedPaths;
