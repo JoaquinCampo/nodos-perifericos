@@ -1,8 +1,11 @@
 import * as clinicService from "~/server/services/clinic";
-import type { CreateClinicSchema } from "~/server/schemas/clinic";
+import type {
+  CreateClinicSchema,
+  FindAllClinicsSchema,
+} from "~/server/schemas/clinic";
 
-export const findAllClinics = async () => {
-  return await clinicService.findAllClinics();
+export const findAllClinics = async (input: FindAllClinicsSchema) => {
+  return await clinicService.findAllClinics(input);
 };
 
 export const createClinic = async (input: CreateClinicSchema) => {

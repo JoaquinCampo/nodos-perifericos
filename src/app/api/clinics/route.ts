@@ -21,9 +21,12 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const clinics = await clinicController.findAllClinics();
+    const searchParams = new URLSearchParams(request.url);
+    const providerName = searchParams.get("providerName") ?? undefined;
+
+    const clinics = await clinicController.findAllClinics({ providerName });
 
     return NextResponse.json(clinics, { status: 200 });
   } catch (error) {

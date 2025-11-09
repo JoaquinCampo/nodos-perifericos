@@ -1,5 +1,6 @@
 import z from "zod";
 import { createClinicAdminSchema } from "./clinic-admin";
+import { stringOrUndefinedSchema } from "~/lib/validation/string";
 
 export const createClinicSchema = z.object({
   name: z.string().min(1, "El nombre es requerido"),
@@ -10,3 +11,9 @@ export const createClinicSchema = z.object({
 });
 
 export type CreateClinicSchema = z.infer<typeof createClinicSchema>;
+
+export const findAllClinicsSchema = z.object({
+  providerName: stringOrUndefinedSchema,
+});
+
+export type FindAllClinicsSchema = z.infer<typeof findAllClinicsSchema>;

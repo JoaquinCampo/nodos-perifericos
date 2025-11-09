@@ -1,8 +1,22 @@
 import { db } from "~/server/db";
-import type { CreateClinicSchema } from "~/server/schemas/clinic";
+import type {
+  CreateClinicSchema,
+  FindAllClinicsSchema,
+} from "~/server/schemas/clinic";
 
-export const findAllClinics = async () => {
-  return await db.clinic.findMany();
+export const findAllClinics = async (input: FindAllClinicsSchema) => {
+  const { providerName } = input;
+
+  return await db.clinic.findMany({
+    where: {
+      ...(providerName && {
+        providerName: {
+          contains: providerName,
+          mode: "insensitive",
+        },
+      }),
+    },
+  });
 };
 
 export const createClinic = async (input: CreateClinicSchema) => {

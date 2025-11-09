@@ -48,6 +48,7 @@ model Clinic {
     address String
     phone   String
     email   String
+    providerName String?
 
     users             User[]
     configuration     Configuration?
