@@ -4,12 +4,14 @@ import type {
   PublicPath,
   AdminPath,
   AuthenticatedPath,
+  HealthWorkerPath,
 } from "~/lib/constants/paths";
 import {
   Paths,
   AdminPaths,
   AuthenticatedPaths,
   PublicPaths,
+  HealthWorkerPaths,
 } from "~/lib/constants/paths";
 import { auth } from "~/server/auth";
 import { type Session } from "next-auth";
@@ -24,6 +26,10 @@ export function isAdminPath(path: Path): path is AdminPath {
 
 export function isAuthenticatedPath(path: Path): path is AuthenticatedPath {
   return path in AuthenticatedPaths;
+}
+
+export function isHealthWorkerPath(path: Path): path is HealthWorkerPath {
+  return path in HealthWorkerPaths;
 }
 
 type AuthGuardResult<T extends Path> = T extends PublicPath ? null : Session;
@@ -46,7 +52,7 @@ export async function authGuard<T extends Path>(
   }
 
   if (isHealthWorker) {
-    if (isAuthenticatedPath(path)) {
+    if (isAuthenticatedPath(path) || isHealthWorkerPath(path)) {
       return session as AuthGuardResult<T>;
     }
 

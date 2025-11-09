@@ -9,7 +9,6 @@ import {
   Home,
   Settings,
   Hospital,
-  FileText,
 } from "lucide-react";
 import { AuthenticatedPaths, AdminPaths } from "~/lib/constants/paths";
 import { SignOutButton } from "./sign-out-button";
@@ -29,11 +28,6 @@ const menuItems = [
     label: "Profesionales de Salud",
     path: AuthenticatedPaths.HealthWorkers,
     icon: Stethoscope,
-  },
-  {
-    label: "Documentos Clínicos",
-    path: AuthenticatedPaths.ClinicalDocuments,
-    icon: FileText,
   },
   {
     label: "Administradores",
@@ -119,7 +113,10 @@ export function MainSidebar({
           <div className="space-y-1">
             {visibleMenuItems.map((item) => {
               const Icon = item.icon;
-              const isActive = pathname === item.path;
+              const isActive =
+                item.path === "/"
+                  ? pathname === "/"
+                  : pathname.startsWith(item.path);
 
               return (
                 <Link
@@ -171,7 +168,7 @@ export function MainSidebar({
               href={AdminPaths.Configuration}
               className="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 hover:shadow-md"
               style={
-                pathname === AdminPaths.Configuration
+                pathname.startsWith(AdminPaths.Configuration)
                   ? {
                       background: `linear-gradient(to right, ${configuration.iconBackgroundColor}, ${configuration.iconBackgroundColor}dd)`,
                       color: configuration.iconTextColor,
@@ -185,14 +182,13 @@ export function MainSidebar({
               <Settings
                 className="size-5 transition-transform duration-200 group-hover:scale-110"
                 style={{
-                  color:
-                    pathname === AdminPaths.Configuration
-                      ? configuration.iconTextColor
-                      : `${configuration.sidebarTextColor}99`,
+                  color: pathname.startsWith(AdminPaths.Configuration)
+                    ? configuration.iconTextColor
+                    : `${configuration.sidebarTextColor}99`,
                 }}
               />
               <span className="flex-1">Configuración</span>
-              {pathname === AdminPaths.Configuration && (
+              {pathname.startsWith(AdminPaths.Configuration) && (
                 <div
                   className="size-2 rounded-full opacity-80"
                   style={{ backgroundColor: configuration.iconTextColor }}

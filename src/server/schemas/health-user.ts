@@ -28,3 +28,35 @@ export const findAllHealthUsersSchema = z.object({
 });
 
 export type FindAllHealthUsersSchema = z.infer<typeof findAllHealthUsersSchema>;
+
+export const createAccessRequestSchema = z.object({
+  healthUserCi: z.string().min(1, "El CI del usuario de salud es requerido"),
+  healthWorkerCi: z
+    .string()
+    .min(1, "El CI del profesional de salud es requerido"),
+  clinicName: z.string().min(1, "El nombre de la clínica es requerido"),
+});
+
+export type CreateAccessRequestSchema = z.infer<
+  typeof createAccessRequestSchema
+>;
+
+export const findAllAccessRequestsSchema = z.object({
+  healthUserCi: stringOrUndefinedSchema,
+  healthWorkerCi: stringOrUndefinedSchema,
+  clinicName: stringOrUndefinedSchema,
+});
+
+export type FindAllAccessRequestsSchema = z.infer<
+  typeof findAllAccessRequestsSchema
+>;
+
+export const findHealthUserClinicalHistorySchema = z.object({
+  healthUserCi: ciSchema,
+  clinicName: z.string().min(1, "El nombre de la clínica es requerido"),
+  healthWorkerCi: ciSchema,
+});
+
+export type FindHealthUserClinicalHistorySchema = z.infer<
+  typeof findHealthUserClinicalHistorySchema
+>;

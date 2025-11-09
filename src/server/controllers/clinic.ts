@@ -4,7 +4,7 @@ import type {
   FindAllClinicsSchema,
 } from "~/server/schemas/clinic";
 
-export const findAllClinics = async (input: FindAllClinicsSchema) => {
+export const findAllClinics = async (input?: FindAllClinicsSchema) => {
   return await clinicService.findAllClinics(input);
 };
 

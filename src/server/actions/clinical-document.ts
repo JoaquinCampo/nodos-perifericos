@@ -17,10 +17,10 @@ import {
 // Note: File uploads are now handled directly in the client component
 // This action is kept for future use or non-file operations
 export const createClinicalDocumentAction = actionClient
-    .inputSchema(createClinicalDocumentSchema)
-    .action(async ({ parsedInput: _parsedInput }) => {
-      throw new Error("Use the API route directly for file uploads");
-    });
+  .inputSchema(createClinicalDocumentSchema)
+  .action(async ({ parsedInput: _parsedInput }) => {
+    throw new Error("Use the API route directly for file uploads");
+  });
 
 export const updateClinicalDocumentAction = actionClient
   .inputSchema(updateClinicalDocumentSchema)
@@ -35,7 +35,6 @@ export const updateClinicalDocumentAction = actionClient
         ...parsedInput,
         clinicId: session.user.clinic.id,
       });
-      revalidatePath(Paths.ClinicalDocuments);
       return updatedDocument;
     } catch (error) {
       if (error instanceof Error) {
@@ -58,7 +57,6 @@ export const deleteClinicalDocumentAction = actionClient
         ...parsedInput,
         clinicId: session.user.clinic.id,
       });
-      revalidatePath(Paths.ClinicalDocuments);
       return deletedDocument;
     } catch (error) {
       if (error instanceof Error) {

@@ -1,12 +1,23 @@
 import type {
+  CreateAccessRequestSchema,
   CreateHealthUserSchema,
+  FindAllAccessRequestsSchema,
   FindAllHealthUsersSchema,
+  FindHealthUserClinicalHistorySchema,
 } from "~/server/schemas/health-user";
 import {
+  checkCanCreateAccessRequest,
   checkCanCreateHealthUser,
+  checkCanFindAllAccessRequests,
   checkCanFindAllHealthUsers,
+  checkCanFindHealthUserClinicalHistory,
 } from "~/server/services/health-user/utils";
-import type { FindAllHealthUsersResponse, HealthUser } from "./types";
+import type {
+  FindAllAccessRequestsResponse,
+  FindAllHealthUsersResponse,
+  FindHealthUserByCiResponse,
+  HealthUser,
+} from "~/server/services/health-user/types";
 import { fetchApi } from "~/lib/hcen-api";
 import { db } from "~/server/db";
 
@@ -78,4 +89,67 @@ export const findClinicalHistory = async (healthUserCi: string) => {
       },
     },
   });
+};
+
+export const findHealthUserClinicalHistory = async (
+  input: FindHealthUserClinicalHistorySchema,
+) => {
+  const { healthUserCi, clinicName, healthWorkerCi } = input;
+
+  await checkCanFindHealthUserClinicalHistory(input);
+
+  try {
+    return await fetchApi<FindHealthUserByCiResponse>({
+      path: `health-users/${healthUserCi}/clinical-history`,
+      method: "GET",
+      searchParams: {
+        clinicName: clinicName,
+        healthWorkerCi: healthWorkerCi,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching health user by CI:", error);
+    throw new Error(
+      "Error al obtener la historia clínica del usuario de salud",
+      { cause: error },
+    );
+  }
+};
+
+export const createAccessRequest = async (input: CreateAccessRequestSchema) => {
+  await checkCanCreateAccessRequest(input);
+
+  try {
+    await fetchApi<void>({
+      path: "access-requests",
+      method: "POST",
+      body: input,
+    });
+  } catch (error) {
+    console.error("Error creating access request:", error);
+    throw new Error("Error al crear la solicitud de acceso", { cause: error });
+  }
+};
+
+export const findAllAccessRequests = async (
+  input: FindAllAccessRequestsSchema,
+) => {
+  await checkCanFindAllAccessRequests(input);
+
+  try {
+    return await fetchApi<FindAllAccessRequestsResponse>({
+      path: "access-requests",
+      method: "GET",
+      searchParams: {
+        ...(input.healthUserCi && { healthUserCi: input.healthUserCi }),
+        ...(input.healthWorkerCi && { healthWorkerCi: input.healthWorkerCi }),
+        ...(input.clinicName && { clinicName: input.clinicName }),
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching access requests:", error);
+    throw new Error("Error al obtener las solicitudes de acceso", {
+      cause: error,
+    });
+  }
 };

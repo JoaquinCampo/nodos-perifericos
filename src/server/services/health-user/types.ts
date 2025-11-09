@@ -7,8 +7,8 @@ export type HealthUser = {
   lastName: string;
   gender: Gender;
   email: string;
-  phone: string;
-  address: string;
+  phone: string | null;
+  address: string | null;
   dateOfBirth: string;
   createdAt: string;
   updatedAt: string;
@@ -24,3 +24,50 @@ export type FindAllHealthUsersResponse = {
   hasNextPage: boolean;
   hasPreviousPage: boolean;
 };
+
+type Clinic = {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+type HealthWorker = {
+  id: string;
+  document: string;
+  documentType: string;
+  firstName: string;
+  lastName: string;
+  gender: string;
+  email: string;
+  phone: string;
+  dateOfBirth: string;
+};
+
+type ClinicalDocument = {
+  clinic: Clinic;
+  healthWorker: HealthWorker;
+  title: string;
+  description: string;
+  content: string;
+  contentType: string;
+  contentUrl: string;
+};
+
+export type FindHealthUserByCiResponse = {
+  healthUser: HealthUser;
+  clinicalDocuments: ClinicalDocument[];
+};
+
+export type AccessRequest = {
+  id: string;
+  healthUserCi: string;
+  healthWorker: HealthWorker;
+  clinic: Clinic;
+  createdAt: string;
+};
+
+export type FindAllAccessRequestsResponse = AccessRequest[];

@@ -21,6 +21,7 @@ export default async function HealthUsersPage(props: HealthUsersPageProps) {
   });
 
   const isClinicAdmin = !!session.user.clinicAdmin;
+  const isHealthWorker = !!session.user.healthWorker;
 
   return (
     <div className="space-y-6">
@@ -38,7 +39,7 @@ export default async function HealthUsersPage(props: HealthUsersPageProps) {
 
       <HealthUsersTable
         data={healthUsersResponse}
-        searchParams={searchParams}
+        isHealthWorker={isHealthWorker}
       />
     </div>
   );

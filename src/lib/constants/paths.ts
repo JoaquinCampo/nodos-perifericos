@@ -10,10 +10,16 @@ export const AuthenticatedPaths = {
   ClinicAdmins: "/administradores",
   HealthWorkers: "/profesionales-de-salud",
   HealthUsers: "/usuarios-de-salud",
-  ClinicalDocuments: "/profesionales-de-salud/documentos-clinicos",
 } as const;
 
 export type AuthenticatedPath = keyof typeof AuthenticatedPaths;
+
+export const HealthWorkerPaths = {
+  ClinicalHistory: (healthUserCi: string) =>
+    `/usuarios-de-salud/${healthUserCi}`,
+} as const;
+
+export type HealthWorkerPath = keyof typeof HealthWorkerPaths;
 
 export const AdminPaths = {
   Configuration: "/configuracion",
@@ -25,6 +31,7 @@ export const Paths = {
   ...PublicPaths,
   ...AuthenticatedPaths,
   ...AdminPaths,
+  ...HealthWorkerPaths,
 } as const;
 
 export type Path = keyof typeof Paths;

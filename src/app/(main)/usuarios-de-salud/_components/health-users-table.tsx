@@ -4,12 +4,12 @@ import { type ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import { useRouter } from "next/navigation";
 import { Button } from "~/components/ui/button";
 import type {
   FindAllHealthUsersResponse,
   HealthUser,
 } from "~/server/services/health-user/types";
-import type { SearchParams } from "./search-params";
 import { ServerDataTable } from "~/components/server-data-table";
 
 const createColumns = (): ColumnDef<HealthUser>[] => [
@@ -136,16 +136,27 @@ const createColumns = (): ColumnDef<HealthUser>[] => [
 
 interface HealthUsersTableProps {
   data: FindAllHealthUsersResponse;
-  searchParams: SearchParams;
+  isHealthWorker?: boolean;
 }
 
-export function HealthUsersTable({ data }: HealthUsersTableProps) {
+export function HealthUsersTable(props: HealthUsersTableProps) {
+  const { data, isHealthWorker } = props;
+
+  const router = useRouter();
   const columns = createColumns();
+
+  const handleRowClick = (row: HealthUser) => {
+    if (isHealthWorker) {
+      router.push(`/usuarios-de-salud/${row.ci}`);
+    }
+  };
+
   return (
     <ServerDataTable
       columns={columns}
       data={data.items}
       pagination={{ totalCount: data.total, totalPages: data.totalPages }}
+      onRowClick={handleRowClick}
     />
   );
 }

@@ -4,8 +4,8 @@ import type {
   FindAllClinicsSchema,
 } from "~/server/schemas/clinic";
 
-export const findAllClinics = async (input: FindAllClinicsSchema) => {
-  const { providerName } = input;
+export const findAllClinics = async (input?: FindAllClinicsSchema) => {
+  const { providerName } = input ?? {};
 
   return await db.clinic.findMany({
     where: {
