@@ -38,43 +38,21 @@ import {
 } from "~/server/schemas/health-user";
 import { createHealthUserAction } from "~/server/actions/health-user";
 import { DateTimePicker } from "~/components/ui/date";
-import type { Configuration } from "@prisma/client";
-import { DEFAULT_CONFIGURATION } from "~/lib/constants/configuration";
 
-interface CreateHealthUserButtonProps {
-  clinicName: string;
-  clinicConfig?: Configuration | null;
-}
-
-export function CreateHealthUserButton({
-  clinicName,
-  clinicConfig,
-}: CreateHealthUserButtonProps) {
+export function CreateHealthUserButton() {
   const [open, setOpen] = useState(false);
-
-  // Get clinic card colors with fallbacks to defaults
-  const cardBackgroundColor = clinicConfig?.cardBackgroundColor ?? DEFAULT_CONFIGURATION.cardBackgroundColor;
-  const cardTextColor = clinicConfig?.cardTextColor ?? DEFAULT_CONFIGURATION.cardTextColor;
-
-  console.log('Clinic config theming:', {
-    clinicConfig,
-    cardBackgroundColor,
-    cardTextColor,
-    hasCustomConfig: !!clinicConfig
-  });
 
   const form = useForm({
     resolver: zodResolver(createHealthUserSchema),
     defaultValues: {
-      ci: "",
       firstName: "",
       lastName: "",
-      gender: undefined,
+      ci: "",
       email: "",
       phone: "",
       address: "",
       dateOfBirth: undefined,
-      clinicNames: [clinicName], // Auto-populate with current clinic
+      gender: undefined,
     },
   });
 
@@ -103,14 +81,7 @@ export function CreateHealthUserButton({
           Crear Usuario de Salud
         </Button>
       </DialogTrigger>
-      <DialogContent
-        className="max-h-[90vh] overflow-y-auto"
-        style={{
-          backgroundColor: cardBackgroundColor,
-          color: cardTextColor,
-          border: `1px solid ${cardTextColor}20`, // Subtle border
-        }}
-      >
+      <DialogContent className="max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Crear Usuario de Salud</DialogTitle>
           <DialogDescription>
@@ -164,10 +135,13 @@ export function CreateHealthUserButton({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Género</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Selecciona el género" />
+                        <SelectValue placeholder="Selecciona un género" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -240,14 +214,6 @@ export function CreateHealthUserButton({
                 </FormItem>
               )}
             />
-            <div className="bg-muted/50 rounded-md p-3">
-              <p className="text-sm text-muted-foreground">
-                <strong>Clínica:</strong> {clinicName}
-              </p>
-              <p className="text-xs text-muted-foreground mt-1">
-                El usuario será asociado automáticamente a esta clínica.
-              </p>
-            </div>
             <DialogFooter>
               <Button
                 type="button"
@@ -267,3 +233,4 @@ export function CreateHealthUserButton({
     </Dialog>
   );
 }
+

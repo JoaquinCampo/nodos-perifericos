@@ -10,7 +10,7 @@ export const createHealthUserAction = actionClient
   .inputSchema(createHealthUserSchema)
   .action(async ({ parsedInput }) => {
     try {
-      const createdHealthUser = await healthUserController.createHealthUserController(parsedInput);
+      const createdHealthUser = await healthUserController.createHealthUser(parsedInput);
       revalidatePath(Paths.HealthUsers);
       return createdHealthUser;
     } catch (error) {

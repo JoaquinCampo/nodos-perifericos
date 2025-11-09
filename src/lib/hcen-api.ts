@@ -8,9 +8,13 @@ export const fetchApi = async <T>(options: {
 }): Promise<T> => {
   const { path, method, body, searchParams } = options;
 
-  const fetchUrl = `${env.HCEN_BASE_URL}/api/${path}?${new URLSearchParams(searchParams).toString()}`;
+  const queryString = searchParams
+    ? `?${new URLSearchParams(searchParams).toString()}`
+    : "";
+  const fetchUrl = `${env.HCEN_BASE_URL}/api/${path}${queryString}`;
 
-  // For Vercel deployment, use environment variable to skip SSL verification
+  console.log("Fetching API", fetchUrl);
+
   const response = await fetch(fetchUrl, {
     method,
     body: body ? JSON.stringify(body) : undefined,

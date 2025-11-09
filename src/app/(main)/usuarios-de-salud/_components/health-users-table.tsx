@@ -8,7 +8,7 @@ import { Button } from "~/components/ui/button";
 import type {
   FindAllHealthUsersResponse,
   HealthUser,
-} from "~/lib/hcen-api/health-users";
+} from "~/server/services/health-user/types";
 import type { SearchParams } from "./search-params";
 import { ServerDataTable } from "~/components/server-data-table";
 
@@ -48,11 +48,7 @@ const createColumns = (): ColumnDef<HealthUser>[] => [
         <ArrowUpDown className="ml-2 size-4" />
       </Button>
     ),
-    cell: ({ row }) => (
-      <div>
-        {row.original.ci}
-      </div>
-    ),
+    cell: ({ row }) => <div>{row.original.ci}</div>,
   },
   {
     accessorKey: "email",
@@ -136,26 +132,6 @@ const createColumns = (): ColumnDef<HealthUser>[] => [
       </div>
     ),
   },
-  {
-    accessorKey: "createdAt",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        className="-ml-4"
-      >
-        Fecha de Registro
-        <ArrowUpDown className="ml-2 size-4" />
-      </Button>
-    ),
-    cell: ({ row }) => (
-      <div>
-        {format(new Date(row.original.createdAt), "d 'de' MMMM 'de' yyyy", {
-          locale: es,
-        })}
-      </div>
-    ),
-  },
 ];
 
 interface HealthUsersTableProps {
@@ -169,7 +145,7 @@ export function HealthUsersTable({ data }: HealthUsersTableProps) {
     <ServerDataTable
       columns={columns}
       data={data.items}
-      pagination={{ totalCount: data.totalItems, totalPages: data.totalPages }}
+      pagination={{ totalCount: data.total, totalPages: data.totalPages }}
     />
   );
 }

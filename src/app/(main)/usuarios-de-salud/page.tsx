@@ -1,10 +1,10 @@
 import { authGuard } from "~/server/auth/auth-guard";
-import { fetchHealthUsers } from "~/lib/hcen-api/health-users";
 import { HealthUsersTable } from "./_components/health-users-table";
 import { HealthUsersFilters } from "./_components/filters";
-import { CreateHealthUserButton } from "./_components/buttons/create-health-user-button";
 import type { SearchParams } from "nuqs";
 import { loadSearchParams } from "./_components/search-params";
+import { findAllHealthUsers } from "~/server/controllers/health-user";
+import { CreateHealthUserButton } from "./_components/create-health-user-button";
 
 interface HealthUsersPageProps {
   searchParams: Promise<SearchParams>;
@@ -16,13 +16,11 @@ export default async function HealthUsersPage(props: HealthUsersPageProps) {
   const session = await authGuard("HealthUsers");
   const searchParams = await loadSearchParams(searchParamsPromise);
 
-  const healthUsersResponse = await fetchHealthUsers({
+  const healthUsersResponse = await findAllHealthUsers({
     ...searchParams,
-    pageIndex: searchParams.pageIndex,
   });
 
   const isClinicAdmin = !!session.user.clinicAdmin;
-  const clinicConfig = session.user.clinic.configuration;
 
   return (
     <div className="space-y-6">
@@ -33,12 +31,7 @@ export default async function HealthUsersPage(props: HealthUsersPageProps) {
             Gestiona los usuarios de salud de la clínica
           </p>
         </div>
-        {isClinicAdmin && (
-          <CreateHealthUserButton
-            clinicName={session.user.clinic.name}
-            clinicConfig={clinicConfig}
-          />
-        )}
+        {isClinicAdmin && <CreateHealthUserButton />}
       </div>
 
       <HealthUsersFilters />
