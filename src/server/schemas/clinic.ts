@@ -7,6 +7,7 @@ export const createClinicSchema = z.object({
   email: z.string().email("El email no es válido"),
   phone: z.string().min(1, "El teléfono es requerido"),
   address: z.string().min(1, "La dirección es requerida"),
+  providerName: z.string().optional(),
   clinicAdmin: createClinicAdminSchema.omit({ clinicId: true }),
 });
 
