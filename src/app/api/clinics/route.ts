@@ -23,7 +23,7 @@ export async function POST(request: Request) {
 
 export async function GET(request: Request) {
   try {
-    const searchParams = new URLSearchParams(request.url);
+    const { searchParams } = new URL(request.url);
     const providerName = searchParams.get("providerName") ?? undefined;
 
     const clinics = await clinicController.findAllClinics({ providerName });
