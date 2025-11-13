@@ -47,19 +47,16 @@ type HealthWorker = {
   dateOfBirth: string;
 };
 
-type ClinicalDocument = {
+export type ClinicalDocument = {
   clinic: Clinic;
   healthWorker: HealthWorker;
-  title: string;
-  description: string;
-  content: string;
-  contentType: string;
-  contentUrl: string;
+  createdAt: string;
+  s3Url: string;
 };
 
 export type FindHealthUserByCiResponse = {
   healthUser: HealthUser;
-  clinicalDocuments: ClinicalDocument[];
+  documents: ClinicalDocument[];
 };
 
 export type AccessRequest = {

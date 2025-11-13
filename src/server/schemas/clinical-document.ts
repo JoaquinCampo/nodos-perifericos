@@ -1,39 +1,27 @@
 import z from "zod";
-import { ciSchema } from "~/lib/validation/ci";
+
+export const getPresignedUrlSchema = z.object({
+  fileName: z.string().min(1, "El nombre del archivo es requerido"),
+  contentType: z.string().min(1, "El tipo de contenido es requerido"),
+  healthUserCi: z.string().min(1, "La CI del usuario de salud es requerida"),
+  healthWorkerCi: z
+    .string()
+    .min(1, "La CI del profesional de salud es requerida"),
+  clinicName: z.string().min(1, "El nombre de la clínica es requerido"),
+  providerName: z.string().min(1, "El nombre del proveedor es requerido"),
+});
+
+export type GetPresignedUrlSchema = z.infer<typeof getPresignedUrlSchema>;
 
 export const createClinicalDocumentSchema = z.object({
-  title: z.string().min(1, "El título es requerido"),
-  description: z.string().optional(),
-  healthUserCi: ciSchema,
-  documentType: z.enum(["consultation", "lab_results", "radiology", "prescription"]),
-  content: z.string().optional(), // For text content
-  // File will be handled separately in the controller
+  healthUserCi: z.string().min(1, "La CI del usuario de salud es requerida"),
+  healthWorkerCi: z
+    .string()
+    .min(1, "La CI del profesional de salud es requerida"),
+  clinicName: z.string().min(1, "El nombre de la clínica es requerido"),
+  s3Url: z.string().min(1, "La URL de S3 es requerida"),
 });
 
-export type CreateClinicalDocumentSchema = z.infer<typeof createClinicalDocumentSchema>;
-
-export const findAllClinicalDocumentsSchema = z.object({
-  clinicId: z.string().min(1, "La clínica es requerida"),
-  healthUserCi: z.string().optional(),
-  healthWorkerId: z.string().optional(),
-  documentType: z.string().optional(),
-  status: z.string().optional(),
-});
-
-export type FindAllClinicalDocumentsSchema = z.infer<typeof findAllClinicalDocumentsSchema>;
-
-export const updateClinicalDocumentSchema = z.object({
-  id: z.string().min(1, "El identificador es requerido"),
-  title: z.string().optional(),
-  description: z.string().optional(),
-  documentType: z.enum(["consultation", "lab_results", "radiology", "prescription"]).optional(),
-  status: z.enum(["draft", "final", "signed"]).optional(),
-});
-
-export type UpdateClinicalDocumentSchema = z.infer<typeof updateClinicalDocumentSchema>;
-
-export const deleteClinicalDocumentSchema = z.object({
-  id: z.string().min(1, "El identificador es requerido"),
-});
-
-export type DeleteClinicalDocumentSchema = z.infer<typeof deleteClinicalDocumentSchema>;
+export type CreateClinicalDocumentSchema = z.infer<
+  typeof createClinicalDocumentSchema
+>;

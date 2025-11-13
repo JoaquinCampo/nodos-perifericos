@@ -5,7 +5,10 @@ import {
 import { authGuard } from "~/server/auth/auth-guard";
 import { ClinicalHistoryTable } from "./_components/clinical-history-table";
 import { RequestAccessButton } from "./_components/request-access-button";
+import { UploadDocumentDialog } from "./_components/upload-document-dialog";
 import { Lock } from "lucide-react";
+import { parseLocalDate } from "~/lib/utils/date";
+import { format } from "date-fns";
 
 interface HealthUserPageProps {
   params: Promise<{ ci: string }>;
@@ -21,6 +24,8 @@ export default async function HealthUserPage(props: HealthUserPageProps) {
       healthUserCi: ci,
       clinicName: session.user.clinic.name,
       healthWorkerCi: session.user.ci,
+      providerName:
+        session.user.clinic.providerName ?? session.user.clinic.name,
     });
 
     return (
@@ -33,6 +38,14 @@ export default async function HealthUserPage(props: HealthUserPageProps) {
               {clinicalHistory.healthUser.lastName}
             </p>
           </div>
+          <UploadDocumentDialog
+            healthUserCi={ci}
+            healthWorkerCi={session.user.ci}
+            clinicName={session.user.clinic.name}
+            providerName={
+              session.user.clinic.providerName ?? session.user.clinic.name
+            }
+          />
         </div>
 
         <div className="bg-card rounded-xl border p-6 shadow-sm">
@@ -85,15 +98,19 @@ export default async function HealthUserPage(props: HealthUserPageProps) {
                 Fecha de Nacimiento
               </p>
               <p className="text-base">
-                {new Date(
-                  clinicalHistory.healthUser.dateOfBirth,
-                ).toLocaleDateString("es-UY")}
+                {(() => {
+                  const dateStr = clinicalHistory.healthUser.dateOfBirth;
+                  return format(
+                    parseLocalDate(dateStr),
+                    "d 'de' MMMM 'de' yyyy",
+                  );
+                })()}
               </p>
             </div>
           </div>
         </div>
 
-        <ClinicalHistoryTable data={clinicalHistory.clinicalDocuments} />
+        <ClinicalHistoryTable data={clinicalHistory.documents} />
       </div>
     );
   } catch {

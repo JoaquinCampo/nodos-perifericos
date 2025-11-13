@@ -19,7 +19,6 @@ import type {
   HealthUser,
 } from "~/server/services/health-user/types";
 import { fetchApi } from "~/lib/hcen-api";
-import { db } from "~/server/db";
 
 export const findAllHealthUsers = async (input: FindAllHealthUsersSchema) => {
   const { pageIndex, pageSize, name, ci, clinic } = input;
@@ -71,40 +70,21 @@ export const createHealthUser = async (input: CreateHealthUserSchema) => {
   }
 };
 
-export const findClinicalHistory = async (healthUserCi: string) => {
-  return await db.clinicalDocument.findMany({
-    where: {
-      healthUserCi,
-    },
-    include: {
-      clinic: true,
-      healthWorker: {
-        include: {
-          user: {
-            omit: {
-              password: true,
-            },
-          },
-        },
-      },
-    },
-  });
-};
-
 export const findHealthUserClinicalHistory = async (
   input: FindHealthUserClinicalHistorySchema,
 ) => {
-  const { healthUserCi, clinicName, healthWorkerCi } = input;
-
   await checkCanFindHealthUserClinicalHistory(input);
+
+  const { healthUserCi, clinicName, healthWorkerCi, providerName } = input;
 
   try {
     return await fetchApi<FindHealthUserByCiResponse>({
-      path: `health-users/${healthUserCi}/clinical-history`,
+      path: `clinical-history/${healthUserCi}`,
       method: "GET",
       searchParams: {
-        clinicName: clinicName,
-        healthWorkerCi: healthWorkerCi,
+        clinicName,
+        healthWorkerCi,
+        providerName,
       },
     });
   } catch (error) {

@@ -55,6 +55,7 @@ export const findHealthUserClinicalHistorySchema = z.object({
   healthUserCi: ciSchema,
   clinicName: z.string().min(1, "El nombre de la clínica es requerido"),
   healthWorkerCi: ciSchema,
+  providerName: z.string().min(1, "El nombre del proveedor es requerido"),
 });
 
 export type FindHealthUserClinicalHistorySchema = z.infer<

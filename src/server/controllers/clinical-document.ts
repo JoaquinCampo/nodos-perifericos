@@ -1,42 +1,15 @@
-import type {
-  CreateClinicalDocumentSchema,
-  FindAllClinicalDocumentsSchema,
-  UpdateClinicalDocumentSchema,
-  DeleteClinicalDocumentSchema,
-} from "~/server/schemas/clinical-document";
 import * as clinicalDocumentService from "~/server/services/clinical-document";
+import type {
+  GetPresignedUrlSchema,
+  CreateClinicalDocumentSchema,
+} from "~/server/schemas/clinical-document";
 
-export const createClinicalDocumentController = async (
-  data: CreateClinicalDocumentSchema & {
-    clinicId: string;
-    healthWorkerId: string;
-    contentUrl?: string;
-    s3Key?: string;
-    fileSize?: number;
-    contentType?: string;
-  },
-) => {
-  return await clinicalDocumentService.createClinicalDocument(data);
+export const getPresignedUploadUrl = async (input: GetPresignedUrlSchema) => {
+  return await clinicalDocumentService.getPresignedUploadUrl(input);
 };
 
-export const findAllClinicalDocumentsController = async (
-  filters: FindAllClinicalDocumentsSchema,
-) => {
-  return await clinicalDocumentService.findAllClinicalDocuments(filters);
-};
-
-export const findClinicalDocumentByIdController = async (id: string) => {
-  return await clinicalDocumentService.findClinicalDocumentById(id);
-};
-
-export const updateClinicalDocumentController = async (
-  data: UpdateClinicalDocumentSchema & { clinicId: string },
-) => {
-  return await clinicalDocumentService.updateClinicalDocument(data);
-};
-
-export const deleteClinicalDocumentController = async (
-  data: DeleteClinicalDocumentSchema & { clinicId: string },
-) => {
-  return await clinicalDocumentService.deleteClinicalDocumentService(data);
+export const createClinicalDocument = async (
+  input: CreateClinicalDocumentSchema,
+): Promise<string> => {
+  return await clinicalDocumentService.createClinicalDocument(input);
 };

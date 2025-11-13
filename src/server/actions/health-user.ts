@@ -31,7 +31,9 @@ export const createAccessRequestAction = actionClient
     try {
       const createdAccessRequest =
         await healthUserController.createAccessRequest(parsedInput);
+      // Revalidate both the general health users page and the specific user page
       revalidatePath(Paths.HealthUsers);
+      revalidatePath(`/usuarios-de-salud/${parsedInput.healthUserCi}`);
       return createdAccessRequest;
     } catch (error) {
       if (error instanceof Error) {

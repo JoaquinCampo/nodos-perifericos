@@ -15,10 +15,6 @@ export const createHealthUser = async (input: CreateHealthUserSchema) => {
   return await healthUserService.createHealthUser(input);
 };
 
-export const findClinicalHistory = async (healthUserCi: string) => {
-  return await healthUserService.findClinicalHistory(healthUserCi);
-};
-
 export const findHealthUserClinicalHistory = async (
   input: FindHealthUserClinicalHistorySchema,
 ) => {

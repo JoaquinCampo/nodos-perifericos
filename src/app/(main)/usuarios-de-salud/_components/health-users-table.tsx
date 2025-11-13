@@ -11,6 +11,7 @@ import type {
   HealthUser,
 } from "~/server/services/health-user/types";
 import { ServerDataTable } from "~/components/server-data-table";
+import { parseLocalDate } from "~/lib/utils/date";
 
 const createColumns = (): ColumnDef<HealthUser>[] => [
   {
@@ -126,9 +127,13 @@ const createColumns = (): ColumnDef<HealthUser>[] => [
     ),
     cell: ({ row }) => (
       <div>
-        {format(new Date(row.original.dateOfBirth), "d 'de' MMMM 'de' yyyy", {
-          locale: es,
-        })}
+        {format(
+          parseLocalDate(row.original.dateOfBirth),
+          "d 'de' MMMM 'de' yyyy",
+          {
+            locale: es,
+          },
+        )}
       </div>
     ),
   },
