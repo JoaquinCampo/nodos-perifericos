@@ -6,6 +6,7 @@ import { authGuard } from "~/server/auth/auth-guard";
 import { ClinicalHistoryTable } from "./_components/clinical-history-table";
 import { RequestAccessButton } from "./_components/request-access-button";
 import { UploadDocumentDialog } from "./_components/upload-document-dialog";
+import { ClinicalHistoryChatbot } from "~/components/clinical-history-chatbot";
 import { Lock } from "lucide-react";
 import { parseLocalDate } from "~/lib/utils/date";
 import { format } from "date-fns";
@@ -38,14 +39,20 @@ export default async function HealthUserPage(props: HealthUserPageProps) {
               {clinicalHistory.healthUser.lastName}
             </p>
           </div>
-          <UploadDocumentDialog
-            healthUserCi={ci}
-            healthWorkerCi={session.user.ci}
-            clinicName={session.user.clinic.name}
-            providerName={
-              session.user.clinic.providerName ?? session.user.clinic.name
-            }
-          />
+          <div className="flex gap-3">
+            <ClinicalHistoryChatbot
+              healthUserCi={ci}
+              healthUserName={`${clinicalHistory.healthUser.firstName} ${clinicalHistory.healthUser.lastName}`}
+            />
+            <UploadDocumentDialog
+              healthUserCi={ci}
+              healthWorkerCi={session.user.ci}
+              clinicName={session.user.clinic.name}
+              providerName={
+                session.user.clinic.providerName ?? session.user.clinic.name
+              }
+            />
+          </div>
         </div>
 
         <div className="bg-card rounded-xl border p-6 shadow-sm">

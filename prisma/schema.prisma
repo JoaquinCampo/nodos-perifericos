@@ -52,7 +52,6 @@ model Clinic {
 
     users             User[]
     configuration     Configuration?
-    clinicalDocuments ClinicalDocument[]
 
     createdAt DateTime @default(now())
     updatedAt DateTime @default(now()) @updatedAt
@@ -96,7 +95,7 @@ model HealthWorker {
     updatedAt DateTime @default(now()) @updatedAt
 
     healthWorkerSpecialities HealthWorkerSpeciality[]
-    clinicalDocuments ClinicalDocument[]
+    conversations Conversation[]
 }
 
 model ClinicAdmin {
@@ -131,31 +130,6 @@ model Speciality {
     @@unique([name])
 }
 
-model ClinicalDocument {
-    id String @id @default(cuid())
-
-    title           String
-    description     String?
-    content         String? @db.Text
-    contentType     String?
-    contentUrl      String?
-    documentType    String  // consultation, lab_results, radiology, prescription, etc.
-    status          String @default("draft")  // draft, final, signed
-    s3Key           String?  // S3 object key for deletion
-    fileSize        Int?     // File size in bytes
-
-    healthUserCi    String
-    clinicId        String
-    clinic          Clinic  @relation(fields: [clinicId], references: [id], onDelete: Cascade)
-    healthWorkerId  String
-    healthWorker HealthWorker @relation(fields: [healthWorkerId], references: [id])
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @default(now()) @updatedAt
-}
-
-
-
 model Configuration {
     id       String @id @default(cuid())
     clinicId String @unique
@@ -183,6 +157,34 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+model Conversation {
+    id              String    @id @default(cuid())
+    healthUserCi    String
+    healthWorkerId  String
+    healthWorker    HealthWorker @relation(fields: [healthWorkerId], references: [id], onDelete: Cascade)
+    
+    messages        Message[]
+    
+    createdAt       DateTime  @default(now())
+    updatedAt       DateTime  @default(now()) @updatedAt
+
+    @@index([healthUserCi])
+    @@index([healthWorkerId])
+}
+
+model Message {
+    id              String    @id @default(cuid())
+    conversationId  String
+    conversation    Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+    
+    role            String    // "user" or "assistant"
+    content         String    @db.Text
+    
+    createdAt       DateTime  @default(now())
+
+    @@index([conversationId])
 }
 
 

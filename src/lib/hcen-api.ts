@@ -15,8 +15,6 @@ export const fetchApi = async <T>(options: {
 
   console.log("Fetching API", fetchUrl);
 
-  console.log("Body", JSON.stringify(body));
-
   const response = await fetch(fetchUrl, {
     method,
     body: body ? JSON.stringify(body) : undefined,

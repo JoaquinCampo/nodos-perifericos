@@ -43,8 +43,8 @@ const createColumns = (): ColumnDef<ClinicalDocument>[] => [
       const clinic = row.original.clinic;
       return (
         <div className="space-y-1">
-          <div className="text-sm font-medium">{clinic.name}</div>
-          <div className="text-muted-foreground text-xs">{clinic.address}</div>
+          <div className="text-sm font-medium">{clinic?.name}</div>
+          <div className="text-muted-foreground text-xs">{clinic?.address}</div>
         </div>
       );
     },
@@ -53,7 +53,7 @@ const createColumns = (): ColumnDef<ClinicalDocument>[] => [
     accessorKey: "healthWorker",
     header: "Profesional",
     cell: ({ row }) => {
-      const { firstName, lastName, email } = row.original.healthWorker;
+      const { firstName, lastName, email } = row.original.healthWorker || {};
       return (
         <div className="space-y-1">
           <div className="text-sm font-medium">
