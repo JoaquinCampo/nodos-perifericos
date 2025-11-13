@@ -67,6 +67,7 @@ export function UploadDocumentDialog({
       }
 
       const uploadUrl = presignedResult.data.uploadUrl;
+      const s3Url = presignedResult.data.s3Url;
 
       const uploadResponse = await fetch(uploadUrl, {
         method: "PUT",
@@ -78,12 +79,6 @@ export function UploadDocumentDialog({
 
       if (!uploadResponse.ok) {
         throw new Error("Error al subir el archivo al almacenamiento");
-      }
-
-      const urlParts = uploadUrl.split("?");
-      const s3Url = urlParts[0];
-      if (!s3Url) {
-        throw new Error("URL de S3 inválida");
       }
 
       const createResult = await createClinicalDocumentAction({
