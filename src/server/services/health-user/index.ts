@@ -85,7 +85,7 @@ export const findHealthUserClinicalHistory = async (
   } = input;
 
   try {
-    return await fetchApi<FindHealthUserByCiResponse>({
+    const response = await fetchApi<FindHealthUserByCiResponse>({
       path: `clinical-history/${healthUserCi}`,
       method: "GET",
       searchParams: {
@@ -95,6 +95,10 @@ export const findHealthUserClinicalHistory = async (
         ...(specialtyNames && { specialtyNames }),
       },
     });
+
+    console.log("response", response);
+
+    return response;
   } catch (error) {
     console.error("Error fetching health user by CI:", error);
     throw new Error(

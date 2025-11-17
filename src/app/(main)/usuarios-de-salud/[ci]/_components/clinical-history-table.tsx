@@ -37,6 +37,25 @@ const createColumns = (): ColumnDef<ClinicalDocument>[] => [
     },
   },
   {
+    accessorKey: "title",
+    header: "Título",
+    cell: ({ row }) => {
+      const doc: ClinicalDocument = row.original;
+      const title = doc.title;
+      const description = doc.description;
+      return (
+        <div className="space-y-1">
+          <div className="text-sm font-medium">{title ?? "Sin título"}</div>
+          {description && (
+            <div className="text-muted-foreground line-clamp-2 text-xs">
+              {description}
+            </div>
+          )}
+        </div>
+      );
+    },
+  },
+  {
     accessorKey: "clinic",
     header: "Clínica",
     cell: ({ row }) => {
@@ -65,18 +84,22 @@ const createColumns = (): ColumnDef<ClinicalDocument>[] => [
     },
   },
   {
-    id: "hasFile",
-    header: "Documento",
-    cell: () => {
-      return (
-        <div className="flex items-center gap-2">
-          <Badge
-            variant="outline"
-            className="border-green-200 bg-green-50 text-green-700"
-          >
-            ✓ Disponible
+    id: "contentType",
+    header: "Tipo",
+    cell: ({ row }) => {
+      const doc: ClinicalDocument = row.original;
+      const contentType = doc.contentType;
+      if (!contentType) {
+        return (
+          <Badge variant="outline" className="text-xs">
+            N/A
           </Badge>
-        </div>
+        );
+      }
+      return (
+        <Badge variant="outline" className="text-xs">
+          {contentType}
+        </Badge>
       );
     },
   },
@@ -84,22 +107,25 @@ const createColumns = (): ColumnDef<ClinicalDocument>[] => [
     id: "actions",
     header: "Acciones",
     cell: ({ row }) => {
-      const clinicalDoc = row.original;
+      const doc: ClinicalDocument = row.original;
+      const contentUrl = doc.contentUrl;
+
+      if (!contentUrl) {
+        return (
+          <div className="text-muted-foreground text-sm">No disponible</div>
+        );
+      }
 
       return (
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" asChild className="gap-2">
-            <Link
-              href={clinicalDoc.s3Url}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <Link href={contentUrl} target="_blank" rel="noopener noreferrer">
               <Eye className="h-4 w-4" />
               Ver
             </Link>
           </Button>
           <Button variant="outline" size="sm" asChild className="gap-2">
-            <Link href={clinicalDoc.s3Url} download>
+            <Link href={contentUrl} download>
               <Download className="h-4 w-4" />
               Descargar
             </Link>

@@ -25,12 +25,12 @@ export const createClinicalDocumentSchema = z
     title: z.string().min(1, "El título es requerido"),
     description: z.string().optional(),
     content: z.string().optional(),
-    s3Url: z.string().optional(),
+    contentUrl: z.string().optional(),
     contentType: z.string().optional(),
   })
-  .refine((data) => !!(data.s3Url ?? data.content), {
-    message: "Debe proporcionar una URL de S3 o contenido del documento",
-    path: ["s3Url"],
+  .refine((data) => !!(data.contentUrl ?? data.content), {
+    message: "Debe proporcionar una URL de contenido o contenido del documento",
+    path: ["contentUrl"],
   });
 
 export type CreateClinicalDocumentSchema = z.infer<

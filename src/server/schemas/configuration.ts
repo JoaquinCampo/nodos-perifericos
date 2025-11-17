@@ -4,6 +4,7 @@ import { stringOrUndefinedSchema } from "~/lib/validation/string";
 export const updateConfigurationSchema = z.object({
   configurationId: z.string().min(1, "El identificador es requerido"),
   portalTitle: stringOrUndefinedSchema,
+  logoUrl: stringOrUndefinedSchema,
   sidebarTextColor: stringOrUndefinedSchema,
   sidebarBackgroundColor: stringOrUndefinedSchema,
   backgroundColor: stringOrUndefinedSchema,

@@ -50,6 +50,7 @@ export default async function MainLayout({
         DEFAULT_CONFIGURATION.iconBackgroundColor,
       iconTextColor:
         config?.iconTextColor ?? DEFAULT_CONFIGURATION.iconTextColor,
+      logoUrl: config?.logoUrl ?? null,
     },
   };
 

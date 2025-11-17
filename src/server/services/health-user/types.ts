@@ -48,10 +48,15 @@ type HealthWorker = {
 };
 
 export type ClinicalDocument = {
+  id: string;
+  title: string | null;
+  description: string | null;
+  content: string | null;
+  contentType: string | null;
+  contentUrl: string | null;
   clinic: Clinic;
   healthWorker: HealthWorker;
   createdAt: string;
-  s3Url: string;
 };
 
 export type FindHealthUserByCiResponse = {

@@ -1,7 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 import {
   Users,
   Stethoscope,
@@ -45,6 +47,7 @@ interface MainSidebarProps {
     sidebarBackgroundColor: string;
     iconBackgroundColor: string;
     iconTextColor: string;
+    logoUrl?: string | null;
   };
 }
 
@@ -54,6 +57,7 @@ export function MainSidebar({
   configuration,
 }: MainSidebarProps) {
   const pathname = usePathname();
+  const [logoError, setLogoError] = useState(false);
 
   const visibleMenuItems = menuItems.filter(
     (item) => !item.clinicAdminOnly || isClinicAdmin,
@@ -73,16 +77,27 @@ export function MainSidebar({
       >
         <div className="flex items-center gap-3">
           <div
-            className="flex size-10 items-center justify-center rounded-lg shadow-lg"
+            className="flex size-10 items-center justify-center overflow-hidden rounded-lg shadow-lg"
             style={{
               backgroundColor: configuration.iconBackgroundColor,
               boxShadow: `0 10px 15px -3px ${configuration.iconBackgroundColor}30`,
             }}
           >
-            <Hospital
-              className="size-5"
-              style={{ color: configuration.iconTextColor }}
-            />
+            {configuration.logoUrl && !logoError ? (
+              <Image
+                src={configuration.logoUrl}
+                alt={`${clinicName} logo`}
+                width={40}
+                height={40}
+                className="object-contain"
+                onError={() => setLogoError(true)}
+              />
+            ) : (
+              <Hospital
+                className="size-5"
+                style={{ color: configuration.iconTextColor }}
+              />
+            )}
           </div>
           <div>
             <h2

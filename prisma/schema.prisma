@@ -137,6 +137,7 @@ model Configuration {
 
     // Branding
     portalTitle String @default("Portal de Clínica") // Custom title for the clinic portal (shown in browser tab)
+    logoUrl     String? // URL of the clinic logo image (stored in S3)
 
     // Customizable colors (stored as hex values, e.g., #FF5733)
     sidebarTextColor       String @default("#111827") // Sidebar text color (slate-800)

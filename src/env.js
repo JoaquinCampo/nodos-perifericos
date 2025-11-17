@@ -21,11 +21,10 @@ export const env = createEnv({
     HCEN_BASE_URL: z.string().url(),
     HCEN_APP_USERNAME: z.string(),
     HCEN_APP_PASSWORD: z.string(),
-    AWS_ACCESS_KEY_ID: z.string().optional(),
-    AWS_SECRET_ACCESS_KEY: z.string().optional(),
-    AWS_REGION: z.string().default("us-east-2"),
-    AWS_S3_BUCKET_NAME: z.string().optional(),
-    AWS_S3_BUCKET_URL: z.string().optional(),
+    AWS_ACCESS_KEY_ID: z.string(),
+    AWS_SECRET_ACCESS_KEY: z.string(),
+    AWS_REGION: z.string(),
+    AWS_S3_BUCKET_NAME: z.string(),
   },
 
   /**
@@ -58,7 +57,6 @@ export const env = createEnv({
     AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
     AWS_REGION: process.env.AWS_REGION,
     AWS_S3_BUCKET_NAME: process.env.AWS_S3_BUCKET_NAME,
-    AWS_S3_BUCKET_URL: process.env.AWS_S3_BUCKET_URL,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

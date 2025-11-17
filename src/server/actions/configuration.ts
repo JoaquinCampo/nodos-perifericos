@@ -36,6 +36,7 @@ export const resetConfigurationAction = actionClient
         await configurationController.updateConfiguration({
           configurationId: parsedInput.configurationId,
           ...DEFAULT_CONFIGURATION,
+          logoUrl: undefined, // Clear logo when resetting
         });
 
       revalidatePath(Paths.Configuration);
