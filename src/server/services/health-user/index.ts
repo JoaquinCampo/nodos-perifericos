@@ -50,23 +50,33 @@ export const createHealthUser = async (input: CreateHealthUserSchema) => {
   try {
     const dateOfBirth = input.dateOfBirth.toISOString().split("T")[0];
 
+    const body: Record<string, unknown> = {
+      ci: input.ci,
+      firstName: input.firstName,
+      lastName: input.lastName,
+      gender: input.gender,
+      email: input.email,
+      dateOfBirth,
+      clinicNames: [clinicName],
+    };
+
+    if (input.phone) {
+      body.phone = input.phone;
+    }
+    if (input.address) {
+      body.address = input.address;
+    }
+
     return await fetchApi<HealthUser>({
       path: "health-users",
       method: "POST",
-      body: {
-        ci: input.ci,
-        firstName: input.firstName,
-        lastName: input.lastName,
-        gender: input.gender,
-        email: input.email,
-        phone: input.phone ?? null,
-        address: input.address ?? null,
-        dateOfBirth,
-        clinicNames: [clinicName],
-      },
+      body,
     });
   } catch (error) {
     console.error("Error creating health user:", error);
+    if (error instanceof Error) {
+      throw error;
+    }
     throw new Error("Error al crear el usuario de salud", { cause: error });
   }
 };

@@ -60,7 +60,6 @@ export function CreateHealthUserButton() {
 
   const { execute, isExecuting } = useAction(createHealthUserAction, {
     onSuccess: () => {
-      toast.success("Usuario de salud creado exitosamente");
       form.reset();
       setOpen(false);
       // Wait for messaging queue processing before refreshing
