@@ -1,7 +1,7 @@
 "use client";
 
 import { type ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUpDown, Link2 } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { useRouter } from "next/navigation";
@@ -12,8 +12,15 @@ import type {
 } from "~/server/services/health-user/types";
 import { ServerDataTable } from "~/components/server-data-table";
 import { parseLocalDate } from "~/lib/utils/date";
+import { linkClinicToHealthUserAction } from "~/server/actions/health-user";
+import { useAction } from "next-safe-action/hooks";
+import { toast } from "sonner";
 
-const createColumns = (): ColumnDef<HealthUser>[] => [
+const createColumns = (
+  loggedInClinicName: string,
+  isClinicAdmin: boolean,
+  onLinkSuccess: () => void,
+): ColumnDef<HealthUser>[] => [
   {
     accessorKey: "firstName",
     header: ({ column }) => (
@@ -82,16 +89,6 @@ const createColumns = (): ColumnDef<HealthUser>[] => [
     },
   },
   {
-    accessorKey: "phone",
-    header: "Teléfono",
-    cell: ({ row }) =>
-      row.original.phone ? (
-        <div>{row.original.phone}</div>
-      ) : (
-        <div className="text-muted-foreground text-xs">(no asignado)</div>
-      ),
-  },
-  {
     accessorKey: "gender",
     header: "Género",
     cell: ({ row }) => {
@@ -131,18 +128,105 @@ const createColumns = (): ColumnDef<HealthUser>[] => [
       </div>
     ),
   },
+  ...(isClinicAdmin
+    ? [
+        {
+          id: "actions",
+          header: "Acciones",
+          cell: ({ row }: { row: { original: HealthUser } }) => {
+            const healthUser = row.original;
+            const belongsToClinic = healthUser.clinics.some(
+              (clinic: { name: string }) => clinic.name === loggedInClinicName,
+            );
+
+            if (belongsToClinic) {
+              return (
+                <div className="text-muted-foreground text-sm">
+                  Ya vinculado
+                </div>
+              );
+            }
+
+            return (
+              <LinkClinicButton
+                healthUserCi={healthUser.ci}
+                clinicName={loggedInClinicName}
+                onSuccess={onLinkSuccess}
+              />
+            );
+          },
+        },
+      ]
+    : []),
 ];
+
+interface LinkClinicButtonProps {
+  healthUserCi: string;
+  clinicName: string;
+  onSuccess: () => void;
+}
+
+function LinkClinicButton({
+  healthUserCi,
+  clinicName,
+  onSuccess,
+}: LinkClinicButtonProps) {
+  const { execute, isExecuting } = useAction(linkClinicToHealthUserAction, {
+    onSuccess: () => {
+      toast.success("Clínica vinculada exitosamente");
+      onSuccess();
+    },
+    onError: ({ error }) => {
+      toast.error(
+        error.serverError ?? "Error al vincular la clínica al usuario de salud",
+      );
+    },
+  });
+
+  const handleLink = () => {
+    execute({
+      healthUserCi,
+      clinicName,
+    });
+  };
+
+  return (
+    <Button
+      variant="outline"
+      size="sm"
+      onClick={(e) => {
+        e.stopPropagation();
+        handleLink();
+      }}
+      disabled={isExecuting}
+    >
+      <Link2 className="mr-2 size-4" />
+      {isExecuting ? "Vinculando..." : "Vincular"}
+    </Button>
+  );
+}
 
 interface HealthUsersTableProps {
   data: FindAllHealthUsersResponse;
   isHealthWorker?: boolean;
+  loggedInClinicName: string;
+  isClinicAdmin: boolean;
 }
 
 export function HealthUsersTable(props: HealthUsersTableProps) {
-  const { data, isHealthWorker } = props;
+  const { data, isHealthWorker, loggedInClinicName, isClinicAdmin } = props;
 
   const router = useRouter();
-  const columns = createColumns();
+
+  const handleLinkSuccess = () => {
+    router.refresh();
+  };
+
+  const columns = createColumns(
+    loggedInClinicName,
+    isClinicAdmin,
+    handleLinkSuccess,
+  );
 
   const handleRowClick = (row: HealthUser) => {
     if (isHealthWorker) {

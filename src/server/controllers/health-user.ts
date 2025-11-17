@@ -5,6 +5,7 @@ import type {
   FindAllAccessRequestsSchema,
   FindAllHealthUsersSchema,
   FindHealthUserClinicalHistorySchema,
+  LinkClinicToHealthUserSchema,
 } from "~/server/schemas/health-user";
 
 export const findAllHealthUsers = async (input: FindAllHealthUsersSchema) => {
@@ -29,4 +30,10 @@ export const findAllAccessRequests = async (
   input: FindAllAccessRequestsSchema,
 ) => {
   return await healthUserService.findAllAccessRequests(input);
+};
+
+export const linkClinicToHealthUser = async (
+  input: LinkClinicToHealthUserSchema,
+) => {
+  return await healthUserService.linkClinicToHealthUser(input);
 };

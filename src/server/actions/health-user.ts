@@ -7,6 +7,7 @@ import * as healthUserController from "~/server/controllers/health-user";
 import {
   createAccessRequestSchema,
   createHealthUserSchema,
+  linkClinicToHealthUserSchema,
 } from "~/server/schemas/health-user";
 
 export const createHealthUserAction = actionClient
@@ -40,5 +41,21 @@ export const createAccessRequestAction = actionClient
         throw new Error(error.message);
       }
       throw new Error("Error al crear la solicitud de acceso");
+    }
+  });
+
+export const linkClinicToHealthUserAction = actionClient
+  .inputSchema(linkClinicToHealthUserSchema)
+  .action(async ({ parsedInput }) => {
+    try {
+      const linkedHealthUser =
+        await healthUserController.linkClinicToHealthUser(parsedInput);
+      revalidatePath(Paths.HealthUsers);
+      return linkedHealthUser;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      }
+      throw new Error("Error al vincular la clínica al usuario de salud");
     }
   });

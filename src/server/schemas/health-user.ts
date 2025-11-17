@@ -63,3 +63,12 @@ export const findHealthUserClinicalHistorySchema = z.object({
 export type FindHealthUserClinicalHistorySchema = z.infer<
   typeof findHealthUserClinicalHistorySchema
 >;
+
+export const linkClinicToHealthUserSchema = z.object({
+  healthUserCi: z.string().min(1, "El CI del usuario de salud es requerido"),
+  clinicName: z.string().min(1, "El nombre de la clínica es requerido"),
+});
+
+export type LinkClinicToHealthUserSchema = z.infer<
+  typeof linkClinicToHealthUserSchema
+>;

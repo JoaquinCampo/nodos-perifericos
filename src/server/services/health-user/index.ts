@@ -4,6 +4,7 @@ import type {
   FindAllAccessRequestsSchema,
   FindAllHealthUsersSchema,
   FindHealthUserClinicalHistorySchema,
+  LinkClinicToHealthUserSchema,
 } from "~/server/schemas/health-user";
 import {
   checkCanCreateAccessRequest,
@@ -34,7 +35,7 @@ export const findAllHealthUsers = async (input: FindAllHealthUsersSchema) => {
         pageSize: pageSize.toString(),
         ...(name && { name }),
         ...(ci && { ci }),
-        ...(clinic && { clinic }),
+        ...(clinic && { clinicName: clinic }),
       },
     });
   } catch (error) {
@@ -136,6 +137,27 @@ export const findAllAccessRequests = async (
   } catch (error) {
     console.error("Error fetching access requests:", error);
     throw new Error("Error al obtener las solicitudes de acceso", {
+      cause: error,
+    });
+  }
+};
+
+export const linkClinicToHealthUser = async (
+  input: LinkClinicToHealthUserSchema,
+) => {
+  const { healthUserCi, clinicName } = input;
+
+  try {
+    return await fetchApi<HealthUser>({
+      path: `health-users/${healthUserCi}/link-clinic`,
+      method: "POST",
+      searchParams: {
+        clinicName,
+      },
+    });
+  } catch (error) {
+    console.error("Error linking clinic to health user:", error);
+    throw new Error("Error al vincular la clínica al usuario de salud", {
       cause: error,
     });
   }
