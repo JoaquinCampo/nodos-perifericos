@@ -12,7 +12,7 @@ export type HealthUser = {
   dateOfBirth: string;
   createdAt: string;
   updatedAt: string;
-  clinicNames: string[];
+  clinics: Clinic[];
 };
 
 export type FindAllHealthUsersResponse = {
@@ -25,7 +25,7 @@ export type FindAllHealthUsersResponse = {
   hasPreviousPage: boolean;
 };
 
-type Clinic = {
+export type Clinic = {
   id: string;
   name: string;
   email: string;
@@ -57,6 +57,8 @@ export type ClinicalDocument = {
 export type FindHealthUserByCiResponse = {
   healthUser: HealthUser;
   documents: ClinicalDocument[];
+  hasAccess: boolean;
+  accessMessage: string;
 };
 
 export type AccessRequest = {

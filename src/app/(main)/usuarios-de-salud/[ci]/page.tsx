@@ -20,107 +20,18 @@ export default async function HealthUserPage(props: HealthUserPageProps) {
   const { ci } = await params;
   const session = await authGuard("HealthWorkers");
 
-  try {
-    const clinicalHistory = await findHealthUserClinicalHistory({
-      healthUserCi: ci,
-      clinicName: session.user.clinic.name,
-      healthWorkerCi: session.user.ci,
-      providerName:
-        session.user.clinic.providerName ?? session.user.clinic.name,
-    });
+  const clinicalHistory = await findHealthUserClinicalHistory({
+    healthUserCi: ci,
+    clinicName: session.user.clinic.name,
+    healthWorkerCi: session.user.ci,
+    providerName: session.user.clinic.providerName ?? session.user.clinic.name,
+    specialtyNames: session.user.healthWorker?.healthWorkerSpecialities.map(
+      (speciality) => speciality.speciality.name,
+    ),
+  });
 
-    return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">Historia Clínica</h1>
-            <p className="text-muted-foreground mt-2">
-              Historial clínico de {clinicalHistory.healthUser.firstName}{" "}
-              {clinicalHistory.healthUser.lastName}
-            </p>
-          </div>
-          <div className="flex gap-3">
-            <ClinicalHistoryChatbot
-              healthUserCi={ci}
-              healthUserName={`${clinicalHistory.healthUser.firstName} ${clinicalHistory.healthUser.lastName}`}
-            />
-            <UploadDocumentDialog
-              healthUserCi={ci}
-              healthWorkerCi={session.user.ci}
-              clinicName={session.user.clinic.name}
-              providerName={
-                session.user.clinic.providerName ?? session.user.clinic.name
-              }
-            />
-          </div>
-        </div>
-
-        <div className="bg-card rounded-xl border p-6 shadow-sm">
-          <div className="mb-4">
-            <h2 className="text-xl font-semibold">Información del Usuario</h2>
-            <p className="text-muted-foreground text-sm">
-              Datos personales del usuario de salud
-            </p>
-          </div>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div>
-              <p className="text-muted-foreground text-sm font-medium">
-                Nombre Completo
-              </p>
-              <p className="text-base font-semibold">
-                {clinicalHistory.healthUser.firstName}{" "}
-                {clinicalHistory.healthUser.lastName}
-              </p>
-            </div>
-            <div>
-              <p className="text-muted-foreground text-sm font-medium">CI</p>
-              <p className="font-mono text-base font-semibold">
-                {clinicalHistory.healthUser.ci}
-              </p>
-            </div>
-            <div>
-              <p className="text-muted-foreground text-sm font-medium">Email</p>
-              <p className="text-base">{clinicalHistory.healthUser.email}</p>
-            </div>
-            <div>
-              <p className="text-muted-foreground text-sm font-medium">
-                Teléfono
-              </p>
-              <p className="text-base">
-                {!!clinicalHistory.healthUser.phone
-                  ? clinicalHistory.healthUser.phone
-                  : "No disponible"}
-              </p>
-            </div>
-            <div>
-              <p className="text-muted-foreground text-sm font-medium">
-                Dirección
-              </p>
-              <p className="text-base">
-                {clinicalHistory.healthUser.address ?? "No disponible"}
-              </p>
-            </div>
-            <div>
-              <p className="text-muted-foreground text-sm font-medium">
-                Fecha de Nacimiento
-              </p>
-              <p className="text-base">
-                {(() => {
-                  const dateStr = clinicalHistory.healthUser.dateOfBirth;
-                  return format(
-                    parseLocalDate(dateStr),
-                    "d 'de' MMMM 'de' yyyy",
-                  );
-                })()}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <ClinicalHistoryTable data={clinicalHistory.documents} />
-      </div>
-    );
-  } catch {
+  // Check if access is denied
+  if (!clinicalHistory.hasAccess) {
     const accessRequests = await findAllAccessRequests({
       healthUserCi: ci,
       healthWorkerCi: session.user.ci,
@@ -161,9 +72,108 @@ export default async function HealthUserPage(props: HealthUserPageProps) {
             healthWorkerCi={session.user.ci}
             clinicName={session.user.clinic.name}
             hasPendingRequest={hasPendingRequest}
+            specialtyNames={
+              session.user.healthWorker?.healthWorkerSpecialities.map(
+                (speciality) => speciality.speciality.name,
+              ) ?? []
+            }
           />
         </div>
       </div>
     );
   }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">Historia Clínica</h1>
+          <p className="text-muted-foreground mt-2">
+            Historial clínico de {clinicalHistory.healthUser.firstName}{" "}
+            {clinicalHistory.healthUser.lastName}
+          </p>
+        </div>
+        <div className="flex gap-3">
+          <ClinicalHistoryChatbot
+            healthUserCi={ci}
+            healthUserName={`${clinicalHistory.healthUser.firstName} ${clinicalHistory.healthUser.lastName}`}
+          />
+          <UploadDocumentDialog
+            healthUserCi={ci}
+            healthWorkerCi={session.user.ci}
+            clinicName={session.user.clinic.name}
+            specialtyNames={
+              session.user.healthWorker?.healthWorkerSpecialities.map(
+                (speciality) => speciality.speciality.name,
+              ) ?? []
+            }
+            providerName={
+              session.user.clinic.providerName ?? session.user.clinic.name
+            }
+          />
+        </div>
+      </div>
+
+      <div className="bg-card rounded-xl border p-6 shadow-sm">
+        <div className="mb-4">
+          <h2 className="text-xl font-semibold">Información del Usuario</h2>
+          <p className="text-muted-foreground text-sm">
+            Datos personales del usuario de salud
+          </p>
+        </div>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div>
+            <p className="text-muted-foreground text-sm font-medium">
+              Nombre Completo
+            </p>
+            <p className="text-base font-semibold">
+              {clinicalHistory.healthUser.firstName}{" "}
+              {clinicalHistory.healthUser.lastName}
+            </p>
+          </div>
+          <div>
+            <p className="text-muted-foreground text-sm font-medium">CI</p>
+            <p className="font-mono text-base font-semibold">
+              {clinicalHistory.healthUser.ci}
+            </p>
+          </div>
+          <div>
+            <p className="text-muted-foreground text-sm font-medium">Email</p>
+            <p className="text-base">{clinicalHistory.healthUser.email}</p>
+          </div>
+          <div>
+            <p className="text-muted-foreground text-sm font-medium">
+              Teléfono
+            </p>
+            <p className="text-base">
+              {!!clinicalHistory.healthUser.phone
+                ? clinicalHistory.healthUser.phone
+                : "No disponible"}
+            </p>
+          </div>
+          <div>
+            <p className="text-muted-foreground text-sm font-medium">
+              Dirección
+            </p>
+            <p className="text-base">
+              {clinicalHistory.healthUser.address ?? "No disponible"}
+            </p>
+          </div>
+          <div>
+            <p className="text-muted-foreground text-sm font-medium">
+              Fecha de Nacimiento
+            </p>
+            <p className="text-base">
+              {(() => {
+                const dateStr = clinicalHistory.healthUser.dateOfBirth;
+                return format(parseLocalDate(dateStr), "d 'de' MMMM 'de' yyyy");
+              })()}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <ClinicalHistoryTable data={clinicalHistory.documents} />
+    </div>
+  );
 }

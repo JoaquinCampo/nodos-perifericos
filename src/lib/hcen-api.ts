@@ -4,13 +4,14 @@ export const fetchApi = async <T>(options: {
   path: string;
   method: "GET" | "POST" | "PUT" | "DELETE";
   body?: Record<string, unknown>;
-  searchParams?: Record<string, string>;
+  searchParams?: Record<string, string | string[]>;
 }): Promise<T> => {
   const { path, method, body, searchParams } = options;
 
   const queryString = searchParams
-    ? `?${new URLSearchParams(searchParams).toString()}`
+    ? `?${new URLSearchParams(Object.entries(searchParams).flatMap(([key, value]) => (Array.isArray(value) ? value.map((v) => [key, v]) : [[key, value]]))).toString()}`
     : "";
+
   const fetchUrl = `${env.HCEN_BASE_URL}/api/${path}${queryString}`;
 
   console.log("Fetching API", fetchUrl);

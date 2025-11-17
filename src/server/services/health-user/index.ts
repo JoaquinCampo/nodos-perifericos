@@ -75,7 +75,13 @@ export const findHealthUserClinicalHistory = async (
 ) => {
   await checkCanFindHealthUserClinicalHistory(input);
 
-  const { healthUserCi, clinicName, healthWorkerCi, providerName } = input;
+  const {
+    healthUserCi,
+    clinicName,
+    healthWorkerCi,
+    providerName,
+    specialtyNames,
+  } = input;
 
   try {
     return await fetchApi<FindHealthUserByCiResponse>({
@@ -85,6 +91,7 @@ export const findHealthUserClinicalHistory = async (
         clinicName,
         healthWorkerCi,
         providerName,
+        ...(specialtyNames && { specialtyNames }),
       },
     });
   } catch (error) {

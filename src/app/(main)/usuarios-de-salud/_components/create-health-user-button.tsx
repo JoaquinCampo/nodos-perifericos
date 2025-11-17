@@ -38,8 +38,10 @@ import {
 } from "~/server/schemas/health-user";
 import { createHealthUserAction } from "~/server/actions/health-user";
 import { DateTimePicker } from "~/components/ui/date";
+import { useRouter } from "next/navigation";
 
 export function CreateHealthUserButton() {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
 
   const form = useForm({
@@ -61,11 +63,13 @@ export function CreateHealthUserButton() {
       toast.success("Usuario de salud creado exitosamente");
       form.reset();
       setOpen(false);
+      // Wait for messaging queue processing before refreshing
+      setTimeout(() => {
+        router.refresh();
+      }, 1500);
     },
     onError: ({ error }) => {
-      toast.error(
-        error.serverError ?? "Error al crear el usuario de salud",
-      );
+      toast.error(error.serverError ?? "Error al crear el usuario de salud");
     },
   });
 
@@ -135,10 +139,7 @@ export function CreateHealthUserButton() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Género</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    value={field.value}
-                  >
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Selecciona un género" />
@@ -233,4 +234,3 @@ export function CreateHealthUserButton() {
     </Dialog>
   );
 }
-

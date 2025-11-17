@@ -1,5 +1,6 @@
 import { db } from "~/server/db";
 import { fetchApi } from "~/lib/hcen-api";
+import { MessageRole } from "@prisma/client";
 
 interface ChatResponseDTO {
   answer: string;
@@ -114,7 +115,7 @@ export async function sendMessage(input: {
   const userMessage = await db.message.create({
     data: {
       conversationId: conversation.id,
-      role: "user",
+      role: MessageRole.USER,
       content: message,
     },
   });
@@ -127,7 +128,7 @@ export async function sendMessage(input: {
 
   // Add the new user message to history
   conversationHistory.push({
-    role: "user",
+    role: MessageRole.USER,
     content: message,
   });
 
@@ -148,7 +149,7 @@ export async function sendMessage(input: {
     const assistantMessage = await db.message.create({
       data: {
         conversationId: conversation.id,
-        role: "assistant",
+        role: MessageRole.ASSISTANT,
         content: response.answer,
       },
     });

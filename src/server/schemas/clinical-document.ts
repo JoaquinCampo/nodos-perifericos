@@ -9,18 +9,29 @@ export const getPresignedUrlSchema = z.object({
     .min(1, "La CI del profesional de salud es requerida"),
   clinicName: z.string().min(1, "El nombre de la clínica es requerido"),
   providerName: z.string().min(1, "El nombre del proveedor es requerido"),
+  specialtyNames: z.array(z.string()),
 });
 
 export type GetPresignedUrlSchema = z.infer<typeof getPresignedUrlSchema>;
 
-export const createClinicalDocumentSchema = z.object({
-  healthUserCi: z.string().min(1, "La CI del usuario de salud es requerida"),
-  healthWorkerCi: z
-    .string()
-    .min(1, "La CI del profesional de salud es requerida"),
-  clinicName: z.string().min(1, "El nombre de la clínica es requerido"),
-  s3Url: z.string().min(1, "La URL de S3 es requerida"),
-});
+export const createClinicalDocumentSchema = z
+  .object({
+    healthUserCi: z.string().min(1, "La CI del usuario de salud es requerida"),
+    healthWorkerCi: z
+      .string()
+      .min(1, "La CI del profesional de salud es requerida"),
+    clinicName: z.string().min(1, "El nombre de la clínica es requerido"),
+    providerName: z.string().min(1, "El nombre del proveedor es requerido"),
+    title: z.string().min(1, "El título es requerido"),
+    description: z.string().optional(),
+    content: z.string().optional(),
+    s3Url: z.string().optional(),
+    contentType: z.string().optional(),
+  })
+  .refine((data) => !!(data.s3Url ?? data.content), {
+    message: "Debe proporcionar una URL de S3 o contenido del documento",
+    path: ["s3Url"],
+  });
 
 export type CreateClinicalDocumentSchema = z.infer<
   typeof createClinicalDocumentSchema

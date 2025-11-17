@@ -37,7 +37,15 @@ export const findUserById = async (id: string) => {
           configuration: true,
         },
       },
-      healthWorker: true,
+      healthWorker: {
+        include: {
+          healthWorkerSpecialities: {
+            include: {
+              speciality: true,
+            },
+          },
+        },
+      },
       clinicAdmin: true,
     },
   });

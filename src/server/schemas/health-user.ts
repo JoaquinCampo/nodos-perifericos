@@ -35,6 +35,7 @@ export const createAccessRequestSchema = z.object({
     .string()
     .min(1, "El CI del profesional de salud es requerido"),
   clinicName: z.string().min(1, "El nombre de la clínica es requerido"),
+  specialtyNames: z.array(z.string()),
 });
 
 export type CreateAccessRequestSchema = z.infer<
@@ -56,6 +57,7 @@ export const findHealthUserClinicalHistorySchema = z.object({
   clinicName: z.string().min(1, "El nombre de la clínica es requerido"),
   healthWorkerCi: ciSchema,
   providerName: z.string().min(1, "El nombre del proveedor es requerido"),
+  specialtyNames: z.array(z.string()).optional(),
 });
 
 export type FindHealthUserClinicalHistorySchema = z.infer<

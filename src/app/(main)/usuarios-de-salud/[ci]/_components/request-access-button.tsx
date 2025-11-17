@@ -12,13 +12,21 @@ interface RequestAccessButtonProps {
   healthWorkerCi: string;
   clinicName: string;
   hasPendingRequest: boolean;
+  specialtyNames: string[];
 }
 
 export function RequestAccessButton(props: RequestAccessButtonProps) {
-  const { healthUserCi, healthWorkerCi, clinicName, hasPendingRequest: initialHasPendingRequest } = props;
+  const {
+    healthUserCi,
+    healthWorkerCi,
+    clinicName,
+    hasPendingRequest: initialHasPendingRequest,
+    specialtyNames,
+  } = props;
 
   const router = useRouter();
-  const [optimisticHasPendingRequest, setOptimisticHasPendingRequest] = useState(initialHasPendingRequest);
+  const [optimisticHasPendingRequest, setOptimisticHasPendingRequest] =
+    useState(initialHasPendingRequest);
 
   // Sync optimistic state with prop changes (e.g., after refresh)
   useEffect(() => {
@@ -29,7 +37,10 @@ export function RequestAccessButton(props: RequestAccessButtonProps) {
     onSuccess: () => {
       setOptimisticHasPendingRequest(true);
       toast.success("Solicitud de acceso creada exitosamente");
-      router.refresh();
+      // Wait for messaging queue processing before refreshing
+      setTimeout(() => {
+        router.refresh();
+      }, 1500);
     },
     onError: ({ error }) => {
       setOptimisticHasPendingRequest(initialHasPendingRequest);
@@ -39,7 +50,7 @@ export function RequestAccessButton(props: RequestAccessButtonProps) {
 
   const handleRequestAccess = async () => {
     setOptimisticHasPendingRequest(true);
-    execute({ healthUserCi, healthWorkerCi, clinicName });
+    execute({ healthUserCi, healthWorkerCi, clinicName, specialtyNames });
   };
 
   const displayHasPendingRequest = optimisticHasPendingRequest || isExecuting;
@@ -50,9 +61,7 @@ export function RequestAccessButton(props: RequestAccessButtonProps) {
       disabled={displayHasPendingRequest}
       variant={displayHasPendingRequest ? "outline" : "default"}
     >
-      {displayHasPendingRequest
-        ? "Solicitud Pendiente"
-        : "Solicitar Acceso"}
+      {displayHasPendingRequest ? "Solicitud Pendiente" : "Solicitar Acceso"}
     </Button>
   );
 }

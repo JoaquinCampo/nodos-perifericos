@@ -67,22 +67,16 @@ const createColumns = (): ColumnDef<HealthUser>[] => [
   },
   {
     id: "clinicNames",
-    accessorFn: (healthUser) => healthUser.clinicNames.join(", "),
     header: "Clínicas",
     cell: ({ row }) => {
-      const clinics = row.original.clinicNames;
-
-      if (!clinics?.length) {
-        return (
-          <div className="text-muted-foreground text-xs">(sin clínicas)</div>
-        );
-      }
-
-      const joinedNames = clinics.join(", ");
+      const clinics = row.original.clinics;
 
       return (
-        <div className="max-w-xs truncate" title={joinedNames}>
-          {joinedNames}
+        <div
+          className="max-w-xs truncate"
+          title={clinics.map((clinic) => clinic.name).join(", ")}
+        >
+          {clinics.map((clinic) => clinic.name).join(", ")}
         </div>
       );
     },

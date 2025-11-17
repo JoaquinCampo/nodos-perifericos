@@ -44,7 +44,7 @@ export const createClinicAdmin = async (input: CreateClinicAdminSchema) => {
       OR: [
         { email: fields.email },
         { ci: fields.ci },
-        ...(fields.phone ? [{ phone: fields.phone }] : []),
+        ...(!!fields.phone ? [{ phone: fields.phone }] : []),
       ],
     },
   });

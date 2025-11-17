@@ -17,6 +17,8 @@ import {
   type Clinic,
   type ClinicAdmin,
   type HealthWorker,
+  type HealthWorkerSpeciality,
+  type Speciality,
 } from "@prisma/client";
 import { type Configuration } from "@prisma/client";
 import { v4 as uuidv4 } from "uuid";
@@ -39,7 +41,13 @@ declare module "next-auth" {
       phone: string | null;
       image: string | null;
       clinic: Clinic & { configuration: Configuration };
-      healthWorker: HealthWorker | null;
+      healthWorker:
+        | (HealthWorker & {
+            healthWorkerSpecialities: (HealthWorkerSpeciality & {
+              speciality: Speciality;
+            })[];
+          })
+        | null;
       clinicAdmin: ClinicAdmin | null;
     } & DefaultSession["user"];
   }

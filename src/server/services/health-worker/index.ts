@@ -51,7 +51,7 @@ export const createHealthWorker = async (input: CreateHealthWorkerSchema) => {
       OR: [
         { email: fields.email },
         { ci: fields.ci },
-        ...(fields.phone ? [{ phone: fields.phone }] : []),
+        ...(!!fields.phone ? [{ phone: fields.phone }] : []),
       ],
     },
   });
