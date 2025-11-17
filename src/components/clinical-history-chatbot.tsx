@@ -3,11 +3,18 @@
 import { useState, useRef, useEffect } from "react";
 import { useAction } from "next-safe-action/hooks";
 import { sendMessage } from "~/server/actions/chat";
-import { Sheet, SheetContent, SheetTrigger } from "~/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from "~/components/ui/sheet";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { MessageCircle, Send, Trash2, Loader2 } from "lucide-react";
 import { cn } from "~/lib/utils";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface Message {
   id: string;
@@ -165,7 +172,7 @@ export function ClinicalHistoryChatbot({
           <div className="border-b p-4">
             <div className="flex items-center justify-between gap-2">
               <div className="flex-1">
-                <h3 className="font-semibold">Asistente de Historia Clínica</h3>
+                <SheetTitle>Asistente de Historia Clínica</SheetTitle>
                 {healthUserName && (
                   <p className="text-muted-foreground text-sm">
                     Consulta sobre la historia clínica de {healthUserName}
@@ -222,9 +229,109 @@ export function ClinicalHistoryChatbot({
                           : "bg-muted",
                       )}
                     >
-                      <p className="text-sm break-words whitespace-pre-wrap">
-                        {message.content}
-                      </p>
+                      <div className="max-w-none text-sm break-words">
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm]}
+                          components={{
+                            p: ({ children }) => (
+                              <p className="mb-2 last:mb-0">{children}</p>
+                            ),
+                            ul: ({ children }) => (
+                              <ul className="my-2 ml-4 list-outside list-disc space-y-1 pl-1">
+                                {children}
+                              </ul>
+                            ),
+                            ol: ({ children }) => (
+                              <ol className="my-2 ml-4 list-outside list-decimal space-y-1 pl-1">
+                                {children}
+                              </ol>
+                            ),
+                            li: ({ children }) => (
+                              <li className="leading-relaxed">{children}</li>
+                            ),
+                            code: ({ className, children, ...props }) => {
+                              const isInline = !className;
+                              return isInline ? (
+                                <code
+                                  className={cn(
+                                    "rounded px-1 py-0.5 font-mono text-xs",
+                                    message.role === "user"
+                                      ? "bg-primary-foreground/20"
+                                      : "bg-muted-foreground/20",
+                                  )}
+                                  {...props}
+                                >
+                                  {children}
+                                </code>
+                              ) : (
+                                <code
+                                  className={cn(
+                                    "block rounded p-2 font-mono text-xs",
+                                    message.role === "user"
+                                      ? "bg-primary-foreground/20"
+                                      : "bg-muted-foreground/20",
+                                  )}
+                                  {...props}
+                                >
+                                  {children}
+                                </code>
+                              );
+                            },
+                            pre: ({ children }) => (
+                              <pre className="mb-2 overflow-x-auto last:mb-0">
+                                {children}
+                              </pre>
+                            ),
+                            strong: ({ children }) => (
+                              <strong className="font-semibold">
+                                {children}
+                              </strong>
+                            ),
+                            em: ({ children }) => (
+                              <em className="italic">{children}</em>
+                            ),
+                            h1: ({ children }) => (
+                              <h1 className="mb-2 text-lg font-bold">
+                                {children}
+                              </h1>
+                            ),
+                            h2: ({ children }) => (
+                              <h2 className="mb-2 text-base font-bold">
+                                {children}
+                              </h2>
+                            ),
+                            h3: ({ children }) => (
+                              <h3 className="mb-1 text-sm font-bold">
+                                {children}
+                              </h3>
+                            ),
+                            blockquote: ({ children }) => (
+                              <blockquote
+                                className={cn(
+                                  "mb-2 border-l-2 pl-3 italic last:mb-0",
+                                  message.role === "user"
+                                    ? "border-primary-foreground/30"
+                                    : "border-muted-foreground/30",
+                                )}
+                              >
+                                {children}
+                              </blockquote>
+                            ),
+                            a: ({ children, href }) => (
+                              <a
+                                href={href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="underline hover:no-underline"
+                              >
+                                {children}
+                              </a>
+                            ),
+                          }}
+                        >
+                          {message.content}
+                        </ReactMarkdown>
+                      </div>
                       <p
                         className={cn(
                           "mt-1 text-[10px]",
