@@ -95,7 +95,6 @@ model HealthWorker {
     updatedAt DateTime @default(now()) @updatedAt
 
     healthWorkerSpecialities HealthWorkerSpeciality[]
-    conversations Conversation[]
 }
 
 model ClinicAdmin {
@@ -158,39 +157,6 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
-}
-
-model Conversation {
-    id              String    @id @default(cuid())
-    healthUserCi    String
-    healthWorkerId  String
-    healthWorker    HealthWorker @relation(fields: [healthWorkerId], references: [id], onDelete: Cascade)
-    
-    messages        Message[]
-    
-    createdAt       DateTime  @default(now())
-    updatedAt       DateTime  @default(now()) @updatedAt
-
-    @@index([healthUserCi])
-    @@index([healthWorkerId])
-}
-
-enum MessageRole {
-    USER
-    ASSISTANT
-}
-
-model Message {
-    id              String    @id @default(cuid())
-    conversationId  String
-    conversation    Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-    
-    role            MessageRole
-    content         String    @db.Text
-    
-    createdAt       DateTime  @default(now())
-
-    @@index([conversationId])
 }
 
 

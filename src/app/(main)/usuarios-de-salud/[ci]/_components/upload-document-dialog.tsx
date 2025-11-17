@@ -106,7 +106,7 @@ export function UploadDocumentDialog({
         providerName,
         title: title || selectedFile.name,
         description: description || undefined,
-        s3Url,
+        contentUrl: s3Url,
         contentType: selectedFile.type,
       });
 
@@ -119,7 +119,6 @@ export function UploadDocumentDialog({
       toast.success("Documento subido exitosamente");
       setOpen(false);
       resetForm();
-      // Wait for messaging queue processing before refreshing
       setTimeout(() => {
         router.refresh();
       }, 1500);
