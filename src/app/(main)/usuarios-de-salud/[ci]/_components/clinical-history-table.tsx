@@ -56,26 +56,28 @@ export function ClinicalHistoryTable({ data }: ClinicalHistoryTableProps) {
 
   return (
     <>
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {data.map((doc) => {
           const hasUrl = !!doc.contentUrl;
 
           return (
             <Card
               key={doc.id}
-              className="cursor-pointer transition-all hover:shadow-md"
+              className="group hover:border-primary/50 relative cursor-pointer overflow-hidden transition-all hover:shadow-lg"
               onClick={() => setSelectedDocument(doc)}
             >
-              <CardHeader>
-                <div className="mb-2 flex items-start justify-between">
+              <div className="from-primary/5 absolute inset-0 bg-gradient-to-br via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+
+              <CardHeader className="relative pb-3">
+                <div className="mb-3 flex items-start justify-between gap-2">
                   <Badge
                     variant={hasUrl ? "default" : "secondary"}
-                    className="text-xs"
+                    className="text-xs font-medium"
                   >
                     {hasUrl ? (
                       <>
                         <Link2 className="mr-1 h-3 w-3" />
-                        URL
+                        Documento
                       </>
                     ) : (
                       <>
@@ -90,29 +92,45 @@ export function ClinicalHistoryTable({ data }: ClinicalHistoryTableProps) {
                     </Badge>
                   )}
                 </div>
-                <CardTitle className="line-clamp-2 text-base">
+                <CardTitle className="line-clamp-2 text-lg leading-tight font-bold">
                   {doc.title ?? "Sin título"}
                 </CardTitle>
                 {doc.description && (
-                  <CardDescription className="line-clamp-3">
+                  <CardDescription className="mt-2 line-clamp-2 text-sm leading-relaxed">
                     {doc.description}
                   </CardDescription>
                 )}
               </CardHeader>
-              <CardContent className="space-y-2">
-                <div className="text-muted-foreground flex items-center gap-2 text-xs">
-                  <Calendar className="h-3 w-3" />
-                  {format(
-                    parseLocalDate(doc.createdAt),
-                    "d 'de' MMMM 'de' yyyy",
-                    {
-                      locale: es,
-                    },
+
+              <CardContent className="relative space-y-3 pt-0">
+                <div className="via-border h-px bg-gradient-to-r from-transparent to-transparent" />
+
+                <div className="space-y-2">
+                  <div className="text-muted-foreground flex items-center gap-2 text-xs">
+                    <div className="bg-primary/10 flex h-6 w-6 items-center justify-center rounded-md">
+                      <Calendar className="text-primary h-3.5 w-3.5" />
+                    </div>
+                    <span className="font-medium">
+                      {format(
+                        parseLocalDate(doc.createdAt),
+                        "d 'de' MMMM 'de' yyyy",
+                        {
+                          locale: es,
+                        },
+                      )}
+                    </span>
+                  </div>
+
+                  {doc.clinic?.name && (
+                    <div className="text-muted-foreground flex items-center gap-2 text-xs">
+                      <div className="bg-primary/10 flex h-6 w-6 items-center justify-center rounded-md">
+                        <Building2 className="text-primary h-3.5 w-3.5" />
+                      </div>
+                      <span className="truncate font-medium">
+                        {doc.clinic.name}
+                      </span>
+                    </div>
                   )}
-                </div>
-                <div className="text-muted-foreground flex items-center gap-2 text-xs">
-                  <Building2 className="h-3 w-3" />
-                  <span className="truncate">{doc.clinic?.name}</span>
                 </div>
               </CardContent>
             </Card>
@@ -127,122 +145,143 @@ export function ClinicalHistoryTable({ data }: ClinicalHistoryTableProps) {
         <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
           {selectedDocument && (
             <>
-              <DialogHeader>
-                <div className="mb-3 flex items-start gap-2">
+              <DialogHeader className="space-y-4">
+                <div className="flex flex-wrap items-start gap-2">
                   <Badge
                     variant={
                       selectedDocument.contentUrl ? "default" : "secondary"
                     }
+                    className="text-xs font-medium"
                   >
                     {selectedDocument.contentUrl ? (
                       <>
                         <Link2 className="mr-1 h-3 w-3" />
-                        Documento con URL
+                        Documento
                       </>
                     ) : (
                       <>
                         <FileText className="mr-1 h-3 w-3" />
-                        Documento con Contenido
+                        Contenido
                       </>
                     )}
                   </Badge>
                   {selectedDocument.contentType && (
-                    <Badge variant="outline">
+                    <Badge variant="outline" className="text-xs">
                       {selectedDocument.contentType}
                     </Badge>
                   )}
                 </div>
-                <DialogTitle className="text-2xl">
-                  {selectedDocument.title ?? "Sin título"}
-                </DialogTitle>
-                {selectedDocument.description && (
-                  <DialogDescription className="text-base">
-                    {selectedDocument.description}
-                  </DialogDescription>
-                )}
+                <div>
+                  <DialogTitle className="text-2xl leading-tight font-bold">
+                    {selectedDocument.title ?? "Sin título"}
+                  </DialogTitle>
+                  {selectedDocument.description && (
+                    <DialogDescription className="mt-2 text-base leading-relaxed">
+                      {selectedDocument.description}
+                    </DialogDescription>
+                  )}
+                </div>
               </DialogHeader>
 
-              <div className="space-y-6">
+              <div className="space-y-5">
                 {/* Date */}
                 {selectedDocument.createdAt && (
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-sm font-medium">
-                      <Calendar className="h-4 w-4" />
-                      Fecha de Creación
+                  <div className="bg-card rounded-lg border p-4">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-lg">
+                        <Calendar className="text-primary h-5 w-5" />
+                      </div>
+                      <div>
+                        <p className="text-muted-foreground text-xs font-medium">
+                          Fecha de Creación
+                        </p>
+                        <p className="text-sm font-semibold">
+                          {format(
+                            parseLocalDate(selectedDocument.createdAt),
+                            "d 'de' MMMM 'de' yyyy 'a las' HH:mm",
+                            { locale: es },
+                          )}
+                        </p>
+                      </div>
                     </div>
-                    <p className="text-muted-foreground pl-6 text-sm">
-                      {format(
-                        parseLocalDate(selectedDocument.createdAt),
-                        "d 'de' MMMM 'de' yyyy 'a las' HH:mm",
-                        { locale: es },
-                      )}
-                    </p>
                   </div>
                 )}
 
                 {/* Clinic */}
                 {selectedDocument.clinic && (
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-sm font-medium">
-                      <Building2 className="h-4 w-4" />
-                      Clínica
-                    </div>
-                    <div className="bg-muted/50 rounded-lg p-3">
-                      {selectedDocument.clinic.name && (
-                        <p className="font-medium">
-                          {selectedDocument.clinic.name}
+                  <div className="bg-card rounded-lg border p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="bg-primary/10 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg">
+                        <Building2 className="text-primary h-5 w-5" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-muted-foreground mb-1 text-xs font-medium">
+                          Clínica
                         </p>
-                      )}
-                      {selectedDocument.clinic.address && (
-                        <p className="text-muted-foreground text-sm">
-                          {selectedDocument.clinic.address}
-                        </p>
-                      )}
-                      {(selectedDocument.clinic.email ||
-                        selectedDocument.clinic.phone) && (
-                        <div className="text-muted-foreground mt-2 flex gap-4 text-xs">
-                          {selectedDocument.clinic.email && (
-                            <span>📧 {selectedDocument.clinic.email}</span>
-                          )}
-                          {selectedDocument.clinic.phone && (
-                            <span>📞 {selectedDocument.clinic.phone}</span>
-                          )}
-                        </div>
-                      )}
+                        {selectedDocument.clinic.name && (
+                          <p className="mb-1 text-sm font-semibold">
+                            {selectedDocument.clinic.name}
+                          </p>
+                        )}
+                        {selectedDocument.clinic.address && (
+                          <p className="text-muted-foreground mb-2 text-xs">
+                            {selectedDocument.clinic.address}
+                          </p>
+                        )}
+                        {(selectedDocument.clinic.email ||
+                          selectedDocument.clinic.phone) && (
+                          <div className="text-muted-foreground flex flex-wrap gap-3 text-xs">
+                            {selectedDocument.clinic.email && (
+                              <span className="flex items-center gap-1">
+                                📧 {selectedDocument.clinic.email}
+                              </span>
+                            )}
+                            {selectedDocument.clinic.phone && (
+                              <span className="flex items-center gap-1">
+                                📞 {selectedDocument.clinic.phone}
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 )}
 
                 {/* Health Worker */}
                 {selectedDocument.healthWorker && (
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-sm font-medium">
-                      <User className="h-4 w-4" />
-                      Profesional de Salud
-                    </div>
-                    <div className="bg-muted/50 rounded-lg p-3">
-                      {(selectedDocument.healthWorker.firstName ||
-                        selectedDocument.healthWorker.lastName) && (
-                        <p className="font-medium">
-                          {selectedDocument.healthWorker.firstName}{" "}
-                          {selectedDocument.healthWorker.lastName}
+                  <div className="bg-card rounded-lg border p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="bg-primary/10 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg">
+                        <User className="text-primary h-5 w-5" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-muted-foreground mb-1 text-xs font-medium">
+                          Profesional de Salud
                         </p>
-                      )}
-                      {selectedDocument.healthWorker.email && (
-                        <p className="text-muted-foreground text-sm">
-                          {selectedDocument.healthWorker.email}
-                        </p>
-                      )}
-                      {(selectedDocument.healthWorker.documentType ||
-                        selectedDocument.healthWorker.document) && (
-                        <p className="text-muted-foreground mt-1 text-xs">
-                          {selectedDocument.healthWorker.documentType}
-                          {selectedDocument.healthWorker.documentType &&
-                            selectedDocument.healthWorker.document &&
-                            ": "}
-                          {selectedDocument.healthWorker.document}
-                        </p>
-                      )}
+                        {(selectedDocument.healthWorker.firstName ||
+                          selectedDocument.healthWorker.lastName) && (
+                          <p className="mb-1 text-sm font-semibold">
+                            {selectedDocument.healthWorker.firstName}{" "}
+                            {selectedDocument.healthWorker.lastName}
+                          </p>
+                        )}
+                        {selectedDocument.healthWorker.email && (
+                          <p className="text-muted-foreground mb-1 text-xs">
+                            {selectedDocument.healthWorker.email}
+                          </p>
+                        )}
+                        {(selectedDocument.healthWorker.documentType ||
+                          selectedDocument.healthWorker.document) && (
+                          <p className="text-muted-foreground text-xs">
+                            {selectedDocument.healthWorker.documentType}
+                            {selectedDocument.healthWorker.documentType &&
+                              selectedDocument.healthWorker.document &&
+                              ": "}
+                            {selectedDocument.healthWorker.document}
+                          </p>
+                        )}
+                      </div>
                     </div>
                   </div>
                 )}
@@ -252,18 +291,15 @@ export function ClinicalHistoryTable({ data }: ClinicalHistoryTableProps) {
                   <div className="space-y-3">
                     <div className="flex items-center gap-2 text-sm font-medium">
                       <Link2 className="h-4 w-4" />
-                      Enlace al Documento
+                      Acciones del Documento
                     </div>
-                    <div className="bg-muted/50 rounded-lg p-3">
-                      <p className="text-muted-foreground mb-3 text-sm break-all">
-                        {selectedDocument.contentUrl}
-                      </p>
-                      <div className="flex gap-2">
+                    <div className="from-primary/5 to-primary/10 border-primary/20 rounded-lg border bg-gradient-to-br p-4">
+                      <div className="flex flex-wrap gap-3">
                         <Button
                           variant="default"
-                          size="sm"
+                          size="default"
                           asChild
-                          className="gap-2"
+                          className="min-w-[140px] flex-1 gap-2"
                         >
                           <Link
                             href={selectedDocument.contentUrl}
@@ -276,9 +312,9 @@ export function ClinicalHistoryTable({ data }: ClinicalHistoryTableProps) {
                         </Button>
                         <Button
                           variant="outline"
-                          size="sm"
+                          size="default"
                           asChild
-                          className="gap-2"
+                          className="bg-background hover:bg-accent min-w-[140px] flex-1 gap-2"
                         >
                           <Link href={selectedDocument.contentUrl} download>
                             <Download className="h-4 w-4" />
@@ -294,14 +330,15 @@ export function ClinicalHistoryTable({ data }: ClinicalHistoryTableProps) {
                       <FileText className="h-4 w-4" />
                       Contenido del Documento
                     </div>
-                    <div className="bg-muted/50 max-h-96 overflow-y-auto rounded-lg p-4">
-                      <pre className="text-sm whitespace-pre-wrap">
+                    <div className="bg-muted/50 max-h-96 overflow-y-auto rounded-lg border p-4">
+                      <pre className="font-mono text-sm leading-relaxed whitespace-pre-wrap">
                         {selectedDocument.content}
                       </pre>
                     </div>
                   </div>
                 ) : (
-                  <div className="bg-muted/50 rounded-lg p-4 text-center">
+                  <div className="bg-muted/50 rounded-lg border border-dashed p-6 text-center">
+                    <FileText className="text-muted-foreground/50 mx-auto mb-2 h-8 w-8" />
                     <p className="text-muted-foreground text-sm">
                       No hay contenido disponible para este documento
                     </p>
