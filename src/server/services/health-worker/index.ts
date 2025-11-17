@@ -175,3 +175,38 @@ export const findHealthWorkerByCi = async (ci: string, clinicName: string) => {
     },
   });
 };
+
+export const findHealthWorkersByClinicName = async (clinicName: string) => {
+  const clinic = await db.clinic.findFirst({
+    where: {
+      name: clinicName,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (!clinic) {
+    return null;
+  }
+
+  return await db.healthWorker.findMany({
+    where: {
+      user: {
+        clinicId: clinic.id,
+      },
+    },
+    include: {
+      user: {
+        omit: {
+          password: true,
+        },
+      },
+      healthWorkerSpecialities: {
+        include: {
+          speciality: true,
+        },
+      },
+    },
+  });
+};
